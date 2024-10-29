@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # パスの絶対パス化
-__dotfiles_to_abs_path() {
+dotfiles_to_abs_path() {
     local path="$1"
     if [[ "$path" = /* ]]; then
         echo "$path"
@@ -14,7 +14,7 @@ __dotfiles_to_abs_path() {
 __ln() {
     local target="$1"
     local link="$2"
-    
+
     # 既存のリンクや通常ファイルのバックアップ
     if [ -e "$link" ]; then
         if [ -L "$link" ]; then

@@ -3,6 +3,8 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
+# utils.sh をソースする
+source "${DOTFILES_ROOT}/scripts/setup/utils.sh"
 source "${SCRIPT_DIR}/common.sh"
 
 # シンボリックリンクを作成
@@ -16,10 +18,10 @@ for linklist in "linklist.Unix.txt" "linklist.$(uname).txt"; do
         # パスを展開
         target=$(dotfiles_to_abs_path "$target")
         link=$(eval echo "$link")
-        
+
         # 親ディレクトリを作成
         __mkdir "$(dirname "$link")"
-        
+
         # リンクを作成
         __ln "$target" "$link"
     done
