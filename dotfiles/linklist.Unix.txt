@@ -4,3 +4,6 @@ vim/.vim                ${HOME}/.vim
 # zsh
 zsh/.zsh.d              ${HOME}/.zsh.d
 zsh/.zshenv             ${HOME}/.zshenv
+
+# 汎用ツール
+bin                     ${HOME}/.local/bin

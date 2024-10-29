@@ -108,3 +108,6 @@ export NVM_DIR="$HOME/.nvm"
 if [ -f "$HOME/.aliases/loader.sh" ]; then
     source "$HOME/.aliases/loader.sh"
 fi
+
+# custom tools
+export PATH="$HOME/.local/bin:$PATH"
