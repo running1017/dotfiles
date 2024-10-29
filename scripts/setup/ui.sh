@@ -52,7 +52,8 @@ read_key() {
 # メニューの表示
 draw_menu() {
     local -n items=$1
-    local -n current=$4
+    local -n current_index=$2
+    local -n selected_items=$3
     
     clear_screen
     echo -e "${BOLD}=== セットアップメニュー ===${NC}\n"
@@ -64,19 +65,19 @@ draw_menu() {
         local name="${item%%:*}"
         local description="${item#*:}"
         
-        if [ $i -eq $current ]; then
+        if [ $i -eq $current_index ]; then
             echo -en "${BLUE}>"
         else
             echo -en " "
         fi
         
-        if [[ "${SELECTED_ITEMS[$key]}" == "true" ]]; then
+        if [[ "${selected_items[$key]}" == "true" ]]; then
             echo -en " [${GREEN}×${NC}]"
         else
             echo -en " [ ]"
         fi
         
-        if [ $i -eq $current ]; then
+        if [ $i -eq $current_index ]; then
             echo -e " ${BOLD}${name}${NC}"
             echo -e "   ${description}"
         else
@@ -98,31 +99,32 @@ show_interactive_menu() {
         SELECTED_ITEMS[$key]=${default_selections[$key]}
     done
     
-    local current=0
+    local current_index=0
     local items_count=${#menu_items[@]}
     
     hide_cursor
     trap show_cursor EXIT
     
     while true; do
-        draw_menu menu_items current SELECTED_ITEMS current
+        draw_menu menu_items current_index SELECTED_ITEMS
         
         case $(read_key) in
             Space)
                 local key=(${!menu_items[@]})
-                if [[ "${SELECTED_ITEMS[${key[$current]}]}" == "true" ]]; then
-                    SELECTED_ITEMS[${key[$current]}]="false"
+                local key=${keys[$current_index]}
+                if [[ "${SELECTED_ITEMS[$key]}" == "true" ]]; then
+                    SELECTED_ITEMS[$key]="false"
                 else
-                    SELECTED_ITEMS[${key[$current]}]="true"
+                    SELECTED_ITEMS[$key]="true"
                 fi
                 ;;
             Up)
-                ((current--))
-                [ $current -lt 0 ] && current=$((items_count - 1))
+                ((current_index--))
+                [ $current_index -lt 0 ] && current_index=$((items_count - 1))
                 ;;
             Down)
-                ((current++))
-                [ $current -ge $items_count ] && current=0
+                ((current_index++))
+                [ $current_index -ge $items_count ] && current_index=0
                 ;;
             Enter)
                 show_cursor
