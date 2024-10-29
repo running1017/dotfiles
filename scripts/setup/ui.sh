@@ -52,9 +52,7 @@ read_key() {
 # メニューの表示
 draw_menu() {
     local -n items=$1
-    local -n selected=$2
-    local -n checked=$3
-    local current=$4
+    local -n current=$4
     
     clear_screen
     echo -e "${BOLD}=== セットアップメニュー ===${NC}\n"
@@ -72,7 +70,7 @@ draw_menu() {
             echo -en " "
         fi
         
-        if [ "${checked[$key]}" = true ]; then
+        if [[ "${SELECTED_ITEMS[$key]}" == "true" ]]; then
             echo -en " [${GREEN}×${NC}]"
         else
             echo -en " [ ]"
@@ -93,11 +91,11 @@ draw_menu() {
 show_interactive_menu() {
     local -n menu_items=$1
     local -n default_selections=$2
-    local -A checked
+    declare -A SELECTED_ITEMS
     
     # デフォルト値の設定
     for key in "${!menu_items[@]}"; do
-        checked[$key]=${default_selections[$key]}
+        SELECTED_ITEMS[$key]=${default_selections[$key]}
     done
     
     local current=0
@@ -107,12 +105,16 @@ show_interactive_menu() {
     trap show_cursor EXIT
     
     while true; do
-        draw_menu menu_items current checked
+        draw_menu menu_items current SELECTED_ITEMS current
         
         case $(read_key) in
             Space)
                 local key=(${!menu_items[@]})
-                checked[${key[$current]}]=$([ "${checked[${key[$current]}]}" = true ] && echo false || echo true)
+                if [[ "${SELECTED_ITEMS[${key[$current]}]}" == "true" ]]; then
+                    SELECTED_ITEMS[${key[$current]}]="false"
+                else
+                    SELECTED_ITEMS[${key[$current]}]="true"
+                fi
                 ;;
             Up)
                 ((current--))
@@ -124,10 +126,9 @@ show_interactive_menu() {
                 ;;
             Enter)
                 show_cursor
-                # 選択された項目を配列で返す
                 local selected=()
-                for key in "${!checked[@]}"; do
-                    [ "${checked[$key]}" = true ] && selected+=("$key")
+                for key in "${!SELECTED_ITEMS[@]}"; do
+                    [[ "${SELECTED_ITEMS[$key]}" == "true" ]] && selected+=("$key")
                 done
                 echo "${selected[@]}"
                 return
