@@ -11,7 +11,7 @@ docker run -it \
     -v "${PROJECT_ROOT}:/home/testuser/.dotfiles" \
     --name dotfiles-test-container \
     dotfiles-test \
-    bash -c "cd ~/.dotfiles && ./scripts/setup.sh"
+    bash -c "cd ~/.dotfiles && sudo ./scripts/setup.sh"
 
 # テスト完了後、コンテナを削除
 # (エラー時のデバッグのため--rmオプションではなく明示的に削除)

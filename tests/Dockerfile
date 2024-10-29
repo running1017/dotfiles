@@ -1,7 +1,8 @@
 FROM debian:latest
 
 # 必要なパッケージのインストール
-RUN apt update && apt install -y git sudo
+RUN apt update && apt install -y git sudo \
+    && rm -rf /var/lib/apt/lists/*
 
 # テストユーザーの作成
 RUN useradd -m -s /bin/bash testuser && \
