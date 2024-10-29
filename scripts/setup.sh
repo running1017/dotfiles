@@ -16,9 +16,19 @@ main() {
     log "Debian系環境セットアップスクリプト"
     check_sudo
 
-    # メニューの表示と選択項目の取得
-    selected=($(show_interactive_menu MENU_ITEMS DEFAULT_SELECTIONS))
-    
+    if [[ "$1" == "--auto" || "$1" == "--no-interactive" ]]; then
+        # デフォルトの選択状態から選択項目を決定
+        selected=()
+        for key in "${!DEFAULT_SELECTIONS[@]}"; do
+            if [[ "${DEFAULT_SELECTIONS[$key]}" == "true" ]]; then
+                selected+=("$key")
+            fi
+        done
+    else
+        # メニューの表示と選択項目の取得
+        selected=($(show_interactive_menu MENU_ITEMS DEFAULT_SELECTIONS))
+    fi
+
     # 選択された項目の実行
     for item in "${selected[@]}"; do
         case $item in
@@ -36,10 +46,10 @@ main() {
     done
 
     post_setup
-    
+
     log "セットアップが完了しました！"
     warn "変更を適用するには、システムを再起動するかログアウト/ログインし直してください。"
 }
 
 # スクリプトの実行
-main
+main "$@"

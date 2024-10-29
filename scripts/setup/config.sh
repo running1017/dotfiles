@@ -7,9 +7,9 @@ declare -A DEFAULT_SELECTIONS=(
     ["nodejs"]=false
     ["python"]=false
     ["docker"]=false
-    ["gui_tools"]=true
+    ["gui_tools"]=false
     ["dotfiles"]=true
-    ["vscode_extensions"]=true
+    ["vscode_extensions"]=false
     ["ssh"]=false
     ["system"]=true
 )

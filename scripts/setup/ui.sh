@@ -54,36 +54,36 @@ draw_menu() {
     local -n items=$1
     local -n current_index=$2
     local -n selected_items=$3
-    
+
     clear_screen
     echo -e "${BOLD}=== セットアップメニュー ===${NC}\n"
     echo -e "${YELLOW}[スペース]${NC}で選択/解除、${YELLOW}[Enter]${NC}で実行開始、${YELLOW}[q]${NC}で終了\n"
-    
+
     local i=0
     for key in "${!items[@]}"; do
         local item="${items[$key]}"
         local name="${item%%:*}"
         local description="${item#*:}"
-        
+
         if [ $i -eq $current_index ]; then
             echo -en "${BLUE}>"
         else
             echo -en " "
         fi
-        
+
         if [[ "${selected_items[$key]}" == "true" ]]; then
             echo -en " [${GREEN}×${NC}]"
         else
             echo -en " [ ]"
         fi
-        
+
         if [ $i -eq $current_index ]; then
             echo -e " ${BOLD}${name}${NC}"
             echo -e "   ${description}"
         else
             echo -e " ${name}"
         fi
-        
+
         ((i++))
     done
 }
@@ -93,24 +93,24 @@ show_interactive_menu() {
     local -n menu_items=$1
     local -n default_selections=$2
     declare -A SELECTED_ITEMS
-    
+
     # デフォルト値の設定
     for key in "${!menu_items[@]}"; do
         SELECTED_ITEMS[$key]=${default_selections[$key]}
     done
-    
+
     local current_index=0
     local items_count=${#menu_items[@]}
-    
+
     hide_cursor
     trap show_cursor EXIT
-    
+
     while true; do
         draw_menu menu_items current_index SELECTED_ITEMS
-        
+
         case $(read_key) in
             Space)
-                local key=(${!menu_items[@]})
+                local keys=(${!menu_items[@]})
                 local key=${keys[$current_index]}
                 if [[ "${SELECTED_ITEMS[$key]}" == "true" ]]; then
                     SELECTED_ITEMS[$key]="false"
