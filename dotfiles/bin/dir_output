@@ -30,21 +30,21 @@ process_args() {
 main() {
     # 引数の処理
     process_args "$@"
-    
+
     # 設定の読み込み
     load_config
-    
+
     # 出力ファイル名
     local output_file="./directory_contents.md"
-    
+
     # 出力ファイルの存在確認
     if [[ -f "$output_file" ]]; then
         echo "Warning: $output_file は上書きされます。"
     fi
-    
+
     # Markdownファイルの生成
     generate_markdown "$output_file"
-    
+
     echo "生成されたMarkdownファイル: $output_file"
 }
 

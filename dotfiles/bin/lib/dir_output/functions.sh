@@ -20,21 +20,21 @@ EOF
 get_language() {
     local filename="$1"
     local ext="${filename##*.}"
-    
+
     # 拡張子を小文字に変換
     ext="${ext,,}"
-    
+
     case "$ext" in
         # Shell scripts
         sh|bash|zsh) echo "bash" ;;
-        
+
         # Web development
         js|jsx) echo "javascript" ;;
         ts|tsx) echo "typescript" ;;
         html|htm) echo "html" ;;
         css) echo "css" ;;
         scss|sass) echo "scss" ;;
-        
+
         # Programming languages
         py) echo "python" ;;
         rb) echo "ruby" ;;
@@ -47,27 +47,27 @@ get_language() {
         rs) echo "rust" ;;
         swift) echo "swift" ;;
         kt|kts) echo "kotlin" ;;
-        
+
         # Data formats
         json) echo "json" ;;
         yml|yaml) echo "yaml" ;;
         xml) echo "xml" ;;
         md|markdown) echo "markdown" ;;
         toml) echo "toml" ;;
-        
+
         # Configuration files
         conf|cfg) echo "config" ;;
         ini) echo "ini" ;;
         env) echo "env" ;;
-        
+
         # Database
         sql) echo "sql" ;;
-        
+
         # Docker
         dockerfile) echo "dockerfile" ;;
-        
+
         # Default case
-        *) 
+        *)
             if [[ "$filename" == "Dockerfile" ]]; then
                 echo "dockerfile"
             elif [[ "$filename" == "Makefile" ]]; then
@@ -82,28 +82,28 @@ get_language() {
 # Markdownファイルの生成
 generate_markdown() {
     local output_file="$1"
-    
+
     # eza用の除外パターン文字列を作成
     local eza_exclude=$(IFS='|'; echo "${EXCLUDE_PATTERNS[*]}")
-    
+
     # find用の除外パターンを作成
     local find_exclude=()
     for pattern in "${EXCLUDE_PATTERNS[@]}"; do
         find_exclude+=(-not -path "*/$pattern/*")
     done
-    
+
     # Markdownファイルの作成開始
     echo "# Directory Contents" > "$output_file"
-    
+
     # ディレクトリ構造の追加
     echo -e "\n## Directory Structure\n" >> "$output_file"
     echo '````text' >> "$output_file"
     eza -T -a -I "$eza_exclude" >> "$output_file"
     echo '````' >> "$output_file"
-    
+
     # ファイル内容セクションの追加
     echo -e "\n## File Contents" >> "$output_file"
-    
+
     # すべてのファイルを処理
     find . -type f "${find_exclude[@]}" -not -path "$output_file" | while read -r file; do
         if [[ -f "$file" && -s "$file" ]]; then

@@ -35,7 +35,7 @@ show_cursor() {
 read_key() {
     local key
     read -s -n1 key 2>/dev/null >&2
-    if [[ $key = "" ]]; then 
+    if [[ $key = "" ]]; then
         echo Space
     elif [[ $key = $'\x1b' ]]; then
         read -s -n2 key 2>/dev/null >&2

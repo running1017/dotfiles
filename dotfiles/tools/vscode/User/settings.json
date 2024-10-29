@@ -13,30 +13,30 @@
 
     // Workbench
     "workbench.iconTheme": "vscode-icons",
-    
+
     // Explorer
     "explorer.confirmDelete": false,
     "explorer.confirmDragAndDrop": false,
     "files.exclude": {
         "**/.git": false
     },
-    
+
     // Git
     "git.confirmSync": false,
     "scm.defaultViewMode": "tree",
-    
+
     // TypeScript
     "typescript.updateImportsOnFileMove.enabled": "always",
-    
+
     // Diff Editor
     "diffEditor.ignoreTrimWhitespace": true,
-    
+
     // Notebook
     "notebook.cellToolbarVisibility": "hover",
-    
+
     // Security
     "security.workspace.trust.untrustedFiles": "open",
-    
+
     // Language Specific Settings
     "[markdown]": {
         "editor.formatOnPaste": true,

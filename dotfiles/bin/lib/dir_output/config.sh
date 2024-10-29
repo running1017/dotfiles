@@ -26,7 +26,7 @@ load_config() {
 # 設定を保存する
 save_config() {
     mkdir -p "$CONFIG_DIR"
-    
+
     echo "# dir_output exclude patterns" > "$CONFIG_FILE"
     echo "EXCLUDE_PATTERNS=(" >> "$CONFIG_FILE"
     for pattern in "${EXCLUDE_PATTERNS[@]}"; do
@@ -40,7 +40,7 @@ edit_config() {
     if [ ! -f "$CONFIG_FILE" ]; then
         save_config
     fi
-    
+
     ${EDITOR:-vim} "$CONFIG_FILE"
     echo "設定を更新しました。"
 }
