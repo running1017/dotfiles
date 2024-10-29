@@ -9,20 +9,29 @@ install_base_packages() {
     # 必要なパッケージのリスト
     local initial_packages=(
         curl
+        wget
         ca-certificates
-        gnupg
+        gpg
     )
 
     # 最初に必要なパッケージをインストール
-    sudo apt-get update || error "apt-get updateに失敗しました"
+    sudo apt update || error "apt updateに失敗しました"
     for package in "${initial_packages[@]}"; do
         if ! dpkg -l | grep -q "^ii  $package "; then
             log "インストール中: $package"
-            sudo apt-get install -y "$package" || warn "$package のインストールに失敗しました"
+            sudo apt install -y "$package" || warn "$package のインストールに失敗しました"
         else
             log "$package は既にインストールされています"
         fi
     done
+
+    # ezaのインストール
+    sudo mkdir -p /etc/apt/keyrings
+    wget -qO- https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
+    echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
+    sudo chmod 644 /etc/apt/keyrings/gierens.gpg /etc/apt/sources.list.d/gierens.list
+    sudo apt update
+    sudo apt install -y eza
 
     # 残りのパッケージをインストール
     local packages=(
@@ -30,20 +39,14 @@ install_base_packages() {
         wget
         git
         zsh
-        build-essential
-        pkg-config
-        htop
-        tree
         unzip
         jq
-        language-pack-ja
-        eza
     )
 
     for package in "${packages[@]}"; do
         if ! dpkg -l | grep -q "^ii  $package "; then
             log "インストール中: $package"
-            sudo apt-get install -y "$package" || warn "$package のインストールに失敗しました"
+            sudo apt install -y "$package" || warn "$package のインストールに失敗しました"
         else
             log "$package は既にインストールされています"
         fi
