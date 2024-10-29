@@ -6,11 +6,26 @@ source "${SETUP_DIR}/utils.sh"
 install_base_packages() {
     log "基本パッケージをインストールしています..."
 
-    # 残りのパッケージをインストール
-    local packages=(
+    # 必要なパッケージのリスト
+    local initial_packages=(
         curl
         ca-certificates
         gnupg
+    )
+
+    # 最初に必要なパッケージをインストール
+    sudo apt-get update || error "apt-get updateに失敗しました"
+    for package in "${initial_packages[@]}"; do
+        if ! dpkg -l | grep -q "^ii  $package "; then
+            log "インストール中: $package"
+            sudo apt-get install -y "$package" || warn "$package のインストールに失敗しました"
+        else
+            log "$package は既にインストールされています"
+        fi
+    done
+
+    # 残りのパッケージをインストール
+    local packages=(
         vim
         wget
         git
