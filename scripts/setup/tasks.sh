@@ -6,37 +6,11 @@ source "${SETUP_DIR}/utils.sh"
 install_base_packages() {
     log "基本パッケージをインストールしています..."
 
-    # 必要なパッケージのリスト
-    local initial_packages=(
+    # 残りのパッケージをインストール
+    local packages=(
         curl
         ca-certificates
         gnupg
-    )
-
-    # 最初に必要なパッケージをインストール
-    sudo apt-get update || error "apt-get updateに失敗しました"
-    for package in "${initial_packages[@]}"; do
-        if ! dpkg -l | grep -q "^ii  $package "; then
-            log "インストール中: $package"
-            sudo apt-get install -y "$package" || warn "$package のインストールに失敗しました"
-        else
-            log "$package は既にインストールされています"
-        fi
-    done
-
-    # ezaのリポジトリ追加
-    if [ ! -f /etc/apt/sources.list.d/gierens.list ]; then
-        log "ezaリポジトリを追加しています..."
-        sudo mkdir -p /etc/apt/keyrings
-        curl -fsSL https://raw.githubusercontent.com/gierens/eza-deb/main/KEY.gpg | sudo tee /etc/apt/keyrings/gierens.gpg > /dev/null
-        echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
-    fi
-
-    # 再度apt-get updateを実行
-    sudo apt-get update || error "apt-get updateに失敗しました"
-
-    # 残りのパッケージをインストール
-    local packages=(
         vim
         wget
         git
