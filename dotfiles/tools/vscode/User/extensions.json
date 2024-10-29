@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    "MS-CEINTL.vscode-language-pack-ja",
+    "ritwickdey.LiveServer",
+    "esbenp.prettier-vscode",
+    "vscode-icons-team.vscode-icons",
+    "tamasfe.even-better-toml"
+  ]
+}

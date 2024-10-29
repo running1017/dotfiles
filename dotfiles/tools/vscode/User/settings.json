@@ -1,0 +1,49 @@
+{
+    // Editor
+    "editor.fontFamily": "\"HackGen Console NF\", Consolas, 'Courier New', monospace",
+    "editor.tabSize": 2,
+    "editor.formatOnSave": true,
+    "editor.quickSuggestions": {
+        "strings": true
+    },
+    "editor.acceptSuggestionOnEnter": "off",
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    },
+
+    // Workbench
+    "workbench.iconTheme": "vscode-icons",
+    
+    // Explorer
+    "explorer.confirmDelete": false,
+    "explorer.confirmDragAndDrop": false,
+    "files.exclude": {
+        "**/.git": false
+    },
+    
+    // Git
+    "git.confirmSync": false,
+    "scm.defaultViewMode": "tree",
+    
+    // TypeScript
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    
+    // Diff Editor
+    "diffEditor.ignoreTrimWhitespace": true,
+    
+    // Notebook
+    "notebook.cellToolbarVisibility": "hover",
+    
+    // Security
+    "security.workspace.trust.untrustedFiles": "open",
+    
+    // Language Specific Settings
+    "[markdown]": {
+        "editor.formatOnPaste": true,
+        "editor.wordWrap": "on",
+        "editor.renderWhitespace": "all"
+    },
+
+    // Draw.io Integration
+    "hediet.vscode-drawio.resizeImages": null
+}
