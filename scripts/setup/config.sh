@@ -11,7 +11,6 @@ declare -A DEFAULT_SELECTIONS=(
     ["dotfiles"]=true
     ["vscode_extensions"]=false
     ["ssh"]=false
-    ["system"]=false
 )
 
 # 各項目の表示名と説明
@@ -25,7 +24,6 @@ declare -A MENU_ITEMS=(
     ["dotfiles"]="Dotfiles:設定ファイルのシンボリックリンクを作成します"
     ["vscode_extensions"]="VSCode拡張機能:推奨拡張機能をインストールします"
     ["ssh"]="SSH設定:SSH鍵を生成します"
-    ["system"]="システム設定:タイムゾーンとロケールを設定します"
 )
 
 # スクリプトのパスを設定

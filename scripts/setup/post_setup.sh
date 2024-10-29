@@ -27,11 +27,5 @@ post_setup() {
         fi
     done
 
-    # 環境変数の確認と提案
-    if [ -z "$LANG" ] || [ "$LANG" != "ja_JP.UTF-8" ]; then
-        warn "LANG環境変数が正しく設定されていない可能性があります"
-        echo "現在の値: $LANG"
-    fi
-
     success "セットアップ後の確認が完了しました"
 }

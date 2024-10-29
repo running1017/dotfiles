@@ -341,29 +341,3 @@ setup_ssh() {
         warn "SSH鍵は既に存在します"
     fi
 }
-
-# システム設定
-setup_system() {
-    log "システム設定を行っています..."
-
-    # タイムゾーンの設定
-    if [ "$(timedatectl show --property=Timezone --value)" != "Asia/Tokyo" ]; then
-        log "タイムゾーンを設定しています..."
-        sudo timedatectl set-timezone Asia/Tokyo
-    fi
-
-    # ロケールの設定
-    if ! locale -a | grep -q "ja_JP.utf8"; then
-        log "日本語ロケールを設定しています..."
-        sudo apt-get install -y language-pack-ja
-        sudo update-locale LANG=ja_JP.UTF-8
-    fi
-
-    # キーボードレイアウトの設定
-    if [ -f "/etc/default/keyboard" ]; then
-        log "キーボードレイアウトを設定しています..."
-        sudo sed -i 's/XKBLAYOUT=.*/XKBLAYOUT="jp"/' /etc/default/keyboard
-    fi
-
-    success "システム設定が完了しました"
-}

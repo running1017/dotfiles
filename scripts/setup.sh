@@ -32,7 +32,6 @@ main() {
     # タスクの実行順序を定義
     task_order=(
         "base_packages"
-        "system"
         "zsh"
         "dotfiles"
         "nodejs"
@@ -48,7 +47,6 @@ main() {
         if [[ " ${selected[@]} " =~ " $item " ]]; then
             case $item in
                 "base_packages") install_base_packages ;;
-                "system") setup_system ;;
                 "zsh") setup_zsh ;;
                 "dotfiles") setup_dotfiles ;;
                 "nodejs") install_nodejs ;;
