@@ -5,7 +5,7 @@ source "${SETUP_DIR}/utils.sh"
 # 基本パッケージのインストール
 install_base_packages() {
     log "基本パッケージをインストールしています..."
-    
+
     # 必要なパッケージのリスト
     local packages=(
         vim
@@ -13,6 +13,8 @@ install_base_packages() {
         wget
         git
         zsh
+        gnupg
+        ca-certificates
         build-essential
         pkg-config
         htop
@@ -26,11 +28,15 @@ install_base_packages() {
     # ezaのリポジトリ追加（Ubuntuの場合）
     if [ ! -f /etc/apt/sources.list.d/gierens.list ]; then
         log "ezaリポジトリを追加しています..."
+
+        # 必要なディレクトリの作成
         sudo mkdir -p /etc/apt/keyrings
-        wget -qO- https://raw.githubusercontent.com/gierens/eza-deb/main/KEY.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg
+
+        # GPGキーの取得
+        curl -fsSL https://raw.githubusercontent.com/gierens/eza-deb/main/KEY.gpg | sudo tee /etc/apt/keyrings/gierens.gpg > /dev/null
+
+        # リポジトリの追加
         echo "deb [signed-by=/etc/apt/keyrings/gierens.gpg] http://deb.gierens.de stable main" | sudo tee /etc/apt/sources.list.d/gierens.list
-        sudo chmod 644 /etc/apt/keyrings/gierens.gpg
-        sudo apt update
     fi
     packages+=(eza)
 
@@ -51,20 +57,20 @@ install_base_packages() {
 # Zshの設定
 setup_zsh() {
     log "Zshの設定を行っています..."
-    
+
     # oh-my-zshのインストール
     if [ ! -d "$HOME/.oh-my-zsh" ]; then
         log "oh-my-zshをインストールしています..."
         sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended || error "oh-my-zshのインストールに失敗しました"
-        
+
         # プラグインのインストール
         local plugins_dir="$HOME/.oh-my-zsh/custom/plugins"
-        
+
         # zsh-autosuggestions
         if [ ! -d "$plugins_dir/zsh-autosuggestions" ]; then
             git clone https://github.com/zsh-users/zsh-autosuggestions "$plugins_dir/zsh-autosuggestions"
         fi
-        
+
         # zsh-syntax-highlighting
         if [ ! -d "$plugins_dir/zsh-syntax-highlighting" ]; then
             git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$plugins_dir/zsh-syntax-highlighting"
@@ -72,11 +78,11 @@ setup_zsh() {
     else
         warn "oh-my-zshは既にインストールされています"
     fi
-    
+
     # デフォルトシェルの変更
     if [ "$SHELL" != "$(which zsh)" ]; then
         log "デフォルトシェルをZshに変更しています..."
-        chsh -s $(which zsh) || warn "デフォルトシェルの変更に失敗しました"
+        sudo chsh -s "$(which zsh)" "$USER" || warn "デフォルトシェルの変更に失敗しました"
     fi
 
     success "Zshの設定が完了しました"
@@ -85,7 +91,7 @@ setup_zsh() {
 # Node.jsのインストール
 install_nodejs() {
     log "Node.jsをインストールしています..."
-    
+
     if ! command -v node &> /dev/null; then
         # nvmのインストール
         if [ ! -d "$HOME/.nvm" ]; then
@@ -99,26 +105,26 @@ install_nodejs() {
                 echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm'
                 echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion'
             } >> "$HOME/.zshrc"
-            
+
             # 環境変数の読み込み
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
         else
             warn "nvmは既にインストールされています"
         fi
-        
+
         # Node.jsの最新LTSバージョンをインストール
         log "Node.js LTSをインストールしています..."
         nvm install --lts
         nvm use --lts
-        
+
         # デフォルトバージョンの設定
         nvm alias default 'lts/*'
-        
+
         # 最新のnpmをインストール
         log "npmを更新しています..."
         npm install -g npm@latest
-        
+
         # よく使うグローバルパッケージのインストール
         local packages=(
             yarn
@@ -126,12 +132,12 @@ install_nodejs() {
             ts-node
             gitmoji-cli
         )
-        
+
         for package in "${packages[@]}"; do
             log "インストール中: $package"
             npm install -g "$package"
         done
-        
+
         success "Node.jsのインストールが完了しました"
     else
         warn "Node.jsは既にインストールされています"
@@ -141,7 +147,7 @@ install_nodejs() {
 # Python開発環境のセットアップ
 setup_python() {
     log "Python開発環境をセットアップしています..."
-    
+
     # 必要なパッケージのインストール
     sudo apt-get install -y \
         python3 \
@@ -153,24 +159,24 @@ setup_python() {
     if ! command -v rye &> /dev/null; then
         log "ryeをインストールしています..."
         curl -sSf https://rye-up.com/get | bash
-        
+
         # シェル設定の追加
         {
             echo '# rye'
             echo 'source "$HOME/.rye/env"'
         } >> "$HOME/.zshrc"
-        
+
         # PATHを更新
         source "$HOME/.rye/env"
-        
+
         # ryeの初期設定
         rye config --set-bool behavior.use-uv true
         rye config --set-bool behavior.global-python true
-        
+
         # 最新の安定版Pythonをインストール
         log "最新の安定版Pythonをインストールしています..."
         rye fetch
-        
+
         success "ryeのインストールが完了しました"
     else
         warn "ryeは既にインストールされています"
@@ -182,11 +188,11 @@ setup_python() {
 # Dockerのインストール
 install_docker() {
     log "Dockerをインストールしています..."
-    
+
     if ! command -v docker &> /dev/null; then
         # 古いバージョンの削除
         for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do sudo apt-get remove $pkg; done
-        
+
         # 必要なパッケージのインストール
         sudo apt-get install -y \
             apt-transport-https \
@@ -226,7 +232,7 @@ install_docker() {
 install_gui_tools() {
     if [ "$DISPLAY" ]; then
         log "GUIツールをインストールしています..."
-        
+
         # VSCodeのインストール
         if ! command -v code &> /dev/null; then
             log "Visual Studio Codeをインストールしています..."
@@ -234,18 +240,18 @@ install_gui_tools() {
             sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
             sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
             rm -f packages.microsoft.gpg
-            
+
             sudo apt-get update
             sudo apt-get install -y code
         else
             warn "VSCodeは既にインストールされています"
         fi
-        
+
         # HackGen フォントのインストール
         log "HackGen フォントをインストールしています..."
         HACKGEN_VERSION="v2.9.0"
         FONT_DIR="$HOME/.local/share/fonts"
-        
+
         if [ ! -f "$FONT_DIR/HackGenConsoleNF-Regular.ttf" ]; then
             mkdir -p "$FONT_DIR"
             wget -q "https://github.com/yuru7/HackGen/releases/download/${HACKGEN_VERSION}/HackGen_NF_${HACKGEN_VERSION}.zip"
@@ -266,14 +272,31 @@ install_gui_tools() {
 # dotfilesのリンクを作成
 setup_dotfiles() {
     log "dotfilesのリンクを作成しています..."
-    local LINK_SCRIPT="${DOTFILES_ROOT}/scripts/symbolic_link/link.sh"
-    
-    if [ -f "$LINK_SCRIPT" ]; then
-        bash "$LINK_SCRIPT"
-        success "dotfilesのリンク作成が完了しました"
-    else
-        error "link.shスクリプトが見つかりません: $LINK_SCRIPT"
-    fi
+
+    # utils.sh を読み込む
+    source "${SETUP_DIR}/utils.sh"
+
+    # シンボリックリンクを作成
+    cd "${DOTFILES_ROOT}/dotfiles" || exit 1
+
+    for linklist in "linklist.Unix.txt" "linklist.$(uname).txt"; do
+        [ ! -r "${linklist}" ] && continue
+        log "リンクリストを処理中: ${linklist}"
+
+        remove_linklist_comment "$linklist" | while read -r target link; do
+            # パスを展開
+            target=$(dotfiles_to_abs_path "$target")
+            link=$(eval echo "$link")
+
+            # 親ディレクトリを作成
+            mkdir_recursive "$(dirname "$link")"
+
+            # リンクを作成
+            ln_file "$target" "$link"
+        done
+    done
+
+    success "dotfilesのリンク作成が完了しました"
 }
 
 # VSCode拡張機能のインストール
@@ -281,7 +304,7 @@ setup_vscode() {
     local VSCODE_SCRIPT="${DOTFILES_ROOT}/scripts/tools/vscode/setup.sh"
     if command -v code &> /dev/null; then
         log "VSCode拡張機能をインストールしています..."
-        
+
         if [ -f "$VSCODE_SCRIPT" ]; then
             bash "$VSCODE_SCRIPT"
             success "VSCode拡張機能のインストールが完了しました"
@@ -296,25 +319,25 @@ setup_vscode() {
 # SSH鍵の生成
 setup_ssh() {
     log "SSH鍵の生成を行います..."
-    
+
     if [ ! -f "$HOME/.ssh/id_ed25519" ]; then
         # .sshディレクトリの作成と権限設定
         mkdir -p "$HOME/.ssh"
         chmod 700 "$HOME/.ssh"
-        
+
         # メールアドレスの入力
         read -p "メールアドレスを入力してください: " email
-        
+
         # SSH鍵の生成
         ssh-keygen -t ed25519 -C "$email" -f "$HOME/.ssh/id_ed25519" || error "SSH鍵の生成に失敗しました"
-        
+
         # ssh-agentの起動と鍵の追加
         eval "$(ssh-agent -s)"
         ssh-add "$HOME/.ssh/id_ed25519"
-        
+
         echo -e "\nSSH公開鍵:"
         cat "$HOME/.ssh/id_ed25519.pub"
-        
+
         success "SSH鍵の生成が完了しました"
     else
         warn "SSH鍵は既に存在します"
@@ -324,20 +347,20 @@ setup_ssh() {
 # システム設定
 setup_system() {
     log "システム設定を行っています..."
-    
+
     # タイムゾーンの設定
     if [ "$(timedatectl show --property=Timezone --value)" != "Asia/Tokyo" ]; then
         log "タイムゾーンを設定しています..."
         sudo timedatectl set-timezone Asia/Tokyo
     fi
-    
+
     # ロケールの設定
     if ! locale -a | grep -q "ja_JP.utf8"; then
         log "日本語ロケールを設定しています..."
         sudo apt-get install -y language-pack-ja
         sudo update-locale LANG=ja_JP.UTF-8
     fi
-    
+
     # キーボードレイアウトの設定
     if [ -f "/etc/default/keyboard" ]; then
         log "キーボードレイアウトを設定しています..."

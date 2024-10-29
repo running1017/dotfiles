@@ -10,20 +10,6 @@ source "${SETUP_DIR}/utils.sh"
 source "${SETUP_DIR}/tasks.sh"
 source "${SETUP_DIR}/post_setup.sh"
 
-# タスクの実行順序を定義
-task_order=(
-    "base_packages"
-    "system"
-    "zsh"
-    "dotfiles"
-    "nodejs"
-    "python"
-    "docker"
-    "gui_tools"
-    "vscode_extensions"
-    "ssh"
-)
-
 # メイン処理
 main() {
     clear
@@ -43,23 +29,37 @@ main() {
         selected=($(show_interactive_menu MENU_ITEMS DEFAULT_SELECTIONS))
     fi
 
-    # 選択された項目の実行
+    # タスクの実行順序を定義
+    task_order=(
+        "base_packages"
+        "system"
+        "zsh"
+        "dotfiles"
+        "nodejs"
+        "python"
+        "docker"
+        "gui_tools"
+        "vscode_extensions"
+        "ssh"
+    )
+
+    # 選択された項目の実行 (順序を保つ)
     for item in "${task_order[@]}"; do
         if [[ " ${selected[@]} " =~ " $item " ]]; then
             case $item in
                 "base_packages") install_base_packages ;;
+                "system") setup_system ;;
                 "zsh") setup_zsh ;;
+                "dotfiles") setup_dotfiles ;;
                 "nodejs") install_nodejs ;;
                 "python") setup_python ;;
                 "docker") install_docker ;;
                 "gui_tools") install_gui_tools ;;
-                "dotfiles") setup_dotfiles ;;
                 "vscode_extensions") setup_vscode ;;
                 "ssh") setup_ssh ;;
-                "system") setup_system ;;
             esac
         fi
-    }
+    done
 
     post_setup
 

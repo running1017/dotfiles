@@ -11,7 +11,7 @@ declare -A DEFAULT_SELECTIONS=(
     ["dotfiles"]=true
     ["vscode_extensions"]=false
     ["ssh"]=false
-    ["system"]=true
+    ["system"]=false
 )
 
 # 各項目の表示名と説明
