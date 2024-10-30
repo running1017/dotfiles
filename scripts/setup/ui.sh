@@ -11,20 +11,14 @@ BOLD='\033[1m'
 # メニュー項目の順序を定義
 MENU_ORDER=(
     "base_packages"
-    "zsh"
+    "shell"
     "nodejs"
     "python"
     "docker"
     "gui_tools"
     "dotfiles"
-    "vscode_extensions"
     "ssh"
 )
-
-# 確実に標準出力に出力する関数
-print_stdout() {
-    echo -e "$1" > /dev/tty
-}
 
 # yes/noの入力を処理する関数
 ask_yes_no() {
@@ -35,13 +29,13 @@ ask_yes_no() {
     while true; do
         # デフォルト値に基づいてプロンプトを調整
         if [ "$default" = "y" ]; then
-            printf "%s [Y/n] " "$prompt" > /dev/tty
+            printf "\n%s [Y/n] " "$prompt" >&3
         else
-            printf "%s [y/N] " "$prompt" > /dev/tty
+            printf "\n%s [y/N] " "$prompt" >&3
         fi
 
         # 入力を読み取り
-        read -r answer < /dev/tty
+        read -r answer
 
         # 入力が空の場合はデフォルト値を使用
         if [ -z "$answer" ]; then
@@ -59,7 +53,7 @@ ask_yes_no() {
                 return 1
                 ;;
             *)
-                print_stdout "yまたはnを入力してください"
+                echo -e "yまたはnを入力してください" >&3
                 ;;
         esac
     done
@@ -67,40 +61,52 @@ ask_yes_no() {
 
 # 選択内容を表示する関数
 display_selections() {
-    print_stdout "\n${BOLD}選択された項目:${NC}"
-    print_stdout "${BLUE}----------------------------------------${NC}"
+    echo -e "${BOLD}設定項目${NC}" >&3
+    echo -e "${BLUE}----------------------------------------${NC}" >&3
+    
+    local selected_items="$1"
     
     for key in "${MENU_ORDER[@]}"; do
         local item="${MENU_ITEMS[$key]}"
+        [ -z "$item" ] && continue
+        
         local name="${item%%:*}"
         local description="${item#*:}"
         local status="[ ]"
         
-        if [[ " $1 " =~ " ${key} " ]]; then
+        if [[ " $selected_items " =~ " ${key} " ]]; then
             status="${GREEN}[×]${NC}"
         fi
         
-        printf "%-4s %-20s - %s\n" "$status" "$name" "$description" > /dev/tty
+        printf "%-3b %-20s %s\n" "$status" "$name" "- $description" >&3
     done
     
-    print_stdout "${BLUE}----------------------------------------${NC}\n"
+    echo -e "${BLUE}----------------------------------------${NC}" >&3
+}
+
+# 現在の選択項目を表示する関数
+display_current_selection() {
+    local item="$1"
+    local name="${MENU_ITEMS[$item]%%:*}"
+    local description="${MENU_ITEMS[$item]#*:}"
+
+    echo -e "\n${BLUE}現在の選択項目: ${name}${NC}" >&3
+    echo -e "説明: ${description}" >&3
 }
 
 # インタラクティブな選択プロセスを実行
 run_interactive_selection() {
     local selected_items=""
 
-    print_stdout "\n各項目をインストールするか選択してください（Enterでデフォルト値を選択）\n"
+    # 初期画面表示
+    clear >&3
+    display_selections ""
 
     # 定義された順序で項目を処理
     for key in "${MENU_ORDER[@]}"; do
         local item="${MENU_ITEMS[$key]}"
-        if [ -z "$item" ]; then
-            continue
-        fi
+        [ -z "$item" ] && continue
 
-        local name="${item%%:*}"
-        local description="${item#*:}"
         local default="${DEFAULT_SELECTIONS[$key]}"
         
         # デフォルト値をy/nに変換
@@ -109,17 +115,21 @@ run_interactive_selection() {
             default_yn="y"
         fi
 
-        print_stdout "\n${BLUE}${name}${NC}"
-        print_stdout "説明: ${description}"
+        # 現在の選択項目を表示
+        display_current_selection "$key"
         
         if ask_yes_no "インストールしますか？" "$default_yn"; then
             selected_items="$selected_items $key"
         fi
 
-        # 選択後、現在までの選択状況を表示
-        clear > /dev/tty
+        # 選択後、画面をクリアして選択状況を更新
+        clear >&3
         display_selections "$selected_items"
     done
 
-    echo "$selected_items"
+    # 最終確認画面
+    clear >&3
+    echo -e "${BOLD}選択が完了しました${NC}" >&3
+    display_selections "$selected_items"
+    echo -e "\nセットアップを開始します..." >&3
 }

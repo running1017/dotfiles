@@ -14,14 +14,14 @@ declare -A DEFAULT_SELECTIONS=(
 
 # 各項目の表示名と説明
 declare -A MENU_ITEMS=(
-    ["base_packages"]="基本パッケージ:基本的なコマンドラインツールをインストールします"
-    ["shell"]="shell設定:zsh, eza, starshipのセットアップを行います"
+    ["base_packages"]="base_packages:基本的なコマンドラインツールをインストールします"
+    ["shell"]="shell:zsh, eza, starshipのセットアップを行います"
     ["nodejs"]="Node.js:Node.jsとnpmをインストールします"
-    ["python"]="Python環境:Python, ryeをセットアップします"
+    ["python"]="Python:Python, ryeをセットアップします"
     ["docker"]="Docker:DockerとDocker Composeをインストールします"
-    ["gui_tools"]="GUIツール:VSCodeとHackGenフォントをインストールします"
+    ["gui_tools"]="GUI:VSCodeとHackGenフォントをインストールします"
     ["dotfiles"]="Dotfiles:設定ファイルのシンボリックリンクを作成します"
-    ["ssh"]="SSH設定:SSH鍵を生成します"
+    ["ssh"]="SSH:SSH鍵を生成します"
 )
 
 # スクリプトのパスを設定
