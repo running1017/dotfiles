@@ -30,35 +30,20 @@ install_eza() {
     success "ezaのインストールが完了しました"
 }
 
-# oh-my-zshのインストール関数
-install_oh_my_zsh() {
-    if [ ! -d "$HOME/.oh-my-zsh" ]; then
-        log "oh-my-zshをインストールしています..."
-        
-        # インストールスクリプトの実行
-        run_command 'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended' \
-            "oh-my-zshのインストール"
-
-        # プラグインのインストール
-        local plugins_dir="$HOME/.oh-my-zsh/custom/plugins"
-        mkdir -p "$plugins_dir"
-
-        # zsh-autosuggestions
-        if [ ! -d "$plugins_dir/zsh-autosuggestions" ]; then
-            run_command "git clone https://github.com/zsh-users/zsh-autosuggestions ${plugins_dir}/zsh-autosuggestions" \
-                "zsh-autosuggestionsのインストール"
-        fi
-
-        # zsh-syntax-highlighting
-        if [ ! -d "$plugins_dir/zsh-syntax-highlighting" ]; then
-            run_command "git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${plugins_dir}/zsh-syntax-highlighting" \
-                "zsh-syntax-highlightingのインストール"
-        fi
-
-        success "oh-my-zshのインストールが完了しました"
-    else
-        warn "oh-my-zshは既にインストールされています"
+# starshipのインストール関数
+install_starship() {
+    if command -v starship &> /dev/null; then
+        warn "starshipは既にインストールされています"
+        return 0
     fi
+
+    log "starshipをインストールしています..."
+    
+    # インストールスクリプトの実行
+    run_command 'curl -sS https://starship.rs/install.sh | sh -s -- --yes' \
+        "starshipのインストール"
+
+    success "starshipのインストールが完了しました"
 }
 
 setup_zsh() {
@@ -75,8 +60,8 @@ setup_zsh() {
     # Zshのインストール
     run_apt "install" "zsh" "Zshのインストール"
 
-    # oh-my-zshのインストール
-    install_oh_my_zsh
+    # starshipのインストール
+    install_starship
 
     # ezaのインストール
     install_eza

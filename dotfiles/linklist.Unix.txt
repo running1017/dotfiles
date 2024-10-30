@@ -5,5 +5,8 @@ shell/.vimrc              ${HOME}/.vimrc
 shell/.zshrc            ${HOME}/.zshrc
 shell/.aliases.d        ${HOME}/.aliases.d
 
+# starship
+tools/starship/starship.toml    ${HOME}/.config/starship.toml
+
 # 汎用ツール
 bin                     ${HOME}/.local/bin
