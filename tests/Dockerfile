@@ -1,7 +1,9 @@
 FROM debian:latest
 
 # 必要なパッケージのインストール
-RUN apt update && apt install -y git sudo \
+RUN apt update && apt install -y \
+    git \
+    sudo \
     && rm -rf /var/lib/apt/lists/*
 
 # テストユーザーの作成
@@ -15,6 +17,11 @@ WORKDIR /home/testuser
 
 # ローカルのdotfilesをマウントするためのディレクトリを作成
 RUN mkdir -p /home/testuser/.dotfiles
+
+# テスト実行時の環境変数を設定
+ENV HOME=/home/testuser \
+    USER=testuser \
+    SHELL=/bin/bash
 
 # コンテナ起動時のデフォルトコマンド
 CMD ["bash"]
