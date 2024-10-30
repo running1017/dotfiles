@@ -17,16 +17,16 @@ post_setup() {
 
     # シェルの確認
     if [ "$SHELL" != "$(which zsh)" ]; then
-        warn "デフォルトシェルがZshに変更されていません"
-        echo "以下のコマンドを実行してください:"
-        echo "chsh -s $(which zsh)"
+        warn "デフォルトシェルがzshに変更されていません"
+        warn "デフォルトシェル: $SHELL"
+        warn "以下のコマンドを実行してください:"
+        warn "chsh -s $(which zsh)"
     fi
 
     # 各種パスの確認
     local check_paths=(
-        "${real_home}/.oh-my-zsh"
         "${real_home}/.aliases.d"
-        "${real_home}/.zsh.d"
+        "${real_home}/.zshrc"
     )
 
     for path in "${check_paths[@]}"; do
