@@ -9,7 +9,6 @@ source "${SETUP_DIR}/config.sh"
 source "${SETUP_DIR}/ui.sh"
 source "${SETUP_DIR}/utils.sh"
 source "${SETUP_DIR}/task/main.sh"
-source "${SETUP_DIR}/post_setup.sh"
 
 # メイン処理
 main() {
@@ -66,9 +65,6 @@ main() {
 
     # 選択されたタスクを実行
     execute_tasks "${selected_array[@]}"
-
-    # 後処理の実行
-    post_setup
 
     # セットアップの完了
     finish_setup
