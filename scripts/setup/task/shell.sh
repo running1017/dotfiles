@@ -47,7 +47,7 @@ install_starship() {
 }
 
 setup_zsh() {
-    log "Zshの設定を行っています..."
+    log "zshの設定を行っています..."
 
     # 実際のユーザー名を取得
     local current_user
@@ -57,8 +57,8 @@ setup_zsh() {
         current_user="$(whoami)"
     fi
 
-    # Zshのインストール
-    run_apt "install" "zsh" "Zshのインストール"
+    # zshのインストール
+    run_apt "install" "zsh" "zshのインストール"
 
     # starshipのインストール
     install_starship
@@ -68,12 +68,12 @@ setup_zsh() {
 
     # デフォルトシェルの変更
     if [ "$SHELL" != "$(which zsh)" ]; then
-        log "デフォルトシェルをZshに変更しています..."
+        log "デフォルトシェルをzshに変更しています..."
         run_command "sudo chsh -s $(which zsh) $current_user" \
             "デフォルトシェルの変更"
     else
-        warn "Zshは既にデフォルトシェルとして設定されています"
+        warn "zshは既にデフォルトシェルとして設定されています"
     fi
 
-    success "Zshの設定が完了しました"
+    success "zshの設定が完了しました"
 }

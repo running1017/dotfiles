@@ -19,13 +19,12 @@ execute_tasks() {
     # タスクの実行順序を定義
     local task_order=(
         "base_packages"
-        "zsh"
+        "shell"
         "dotfiles"
         "nodejs"
         "python"
         "docker"
         "gui_tools"
-        "vscode_extensions"
         "ssh"
     )
 
@@ -34,13 +33,12 @@ execute_tasks() {
         if [[ " ${selected[@]} " =~ " $task " ]]; then
             case $task in
                 "base_packages") install_base_packages ;;
-                "zsh") setup_zsh ;;
+                "shell") setup_zsh ;;
                 "dotfiles") setup_dotfiles ;;
                 "nodejs") install_nodejs ;;
                 "python") setup_python ;;
                 "docker") install_docker ;;
                 "gui_tools") install_gui_tools ;;
-                "vscode_extensions") setup_vscode ;;
                 "ssh") setup_ssh ;;
             esac
         fi

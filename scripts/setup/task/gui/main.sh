@@ -8,19 +8,7 @@ source "${SETUP_DIR}/task/gui/fonts.sh"
 # source "${SETUP_DIR}/task/gui/terminal.sh"
 # など
 
-check_gui_environment() {
-    if [ ! "$DISPLAY" ]; then
-        warn "GUI環境が検出されませんでした"
-        return 1
-    fi
-    return 0
-}
-
 install_gui_tools() {
-    if ! check_gui_environment; then
-        return 1
-    fi
-
     log "GUIツールのインストールを開始します..."
 
     # VSCode
