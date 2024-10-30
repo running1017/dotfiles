@@ -27,19 +27,19 @@ echo -e "\nテスト環境に接続するには以下のコマンドをコピー
 
 if [ "$CONTAINER_STATE" = "exited" ]; then
     echo -e "\nコンテナ名を使用する場合:"
-    echo -e "\033[36mdocker start dotfiles-test-container && docker exec -it dotfiles-test-container bash\033[0m"
+    echo -e "\033[36mdocker start dotfiles-test-container && docker exec -it dotfiles-test-container bash -c \"\$SHELL\"\033[0m"
     
     if [ -n "$CONTAINER_ID" ]; then
         echo -e "\nまたは、コンテナIDを使用する場合:"
-        echo -e "\033[36mdocker start $CONTAINER_ID && docker exec -it $CONTAINER_ID bash\033[0m"
+        echo -e "\033[36mdocker start $CONTAINER_ID && docker exec -it $CONTAINER_ID bash -c \"\$SHELL\"\033[0m"
     fi
 else
     echo -e "\nコンテナ名を使用する場合:"
-    echo -e "\033[36mdocker exec -it dotfiles-test-container bash\033[0m"
+    echo -e "\033[36mdocker exec -it dotfiles-test-container bash -c \"\$SHELL\"\033[0m"
     
     if [ -n "$CONTAINER_ID" ]; then
         echo -e "\nまたは、コンテナIDを使用する場合:"
-        echo -e "\033[36mdocker exec -it $CONTAINER_ID bash\033[0m"
+        echo -e "\033[36mdocker exec -it $CONTAINER_ID bash -c \"\$SHELL\"\033[0m"
     fi
 fi
 
