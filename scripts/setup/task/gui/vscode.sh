@@ -2,27 +2,68 @@
 
 source "${SETUP_DIR}/utils.sh"
 
-# VSCode専用のシンボリックリンク作成関数
-setup_vscode_symlinks() {
-    log "VSCode設定ファイルのシンボリックリンクを作成しています..."
+# VSCodeのリポジトリとパッケージをインストール
+install_vscode() {
+    if command -v code &> /dev/null; then
+        warn "Visual Studio Codeは既にインストールされています"
+        return 0
+    fi
 
-    # プラットフォームに応じてVSCodeの設定ディレクトリを決定
-    local vscode_config_dir
+    log "Visual Studio Codeをインストールしています..."
+
+    # キーリングディレクトリの作成
+    run_command "sudo install -m 0755 -d /etc/apt/keyrings" \
+        "キーリングディレクトリの作成"
+
+    # GPGキーの取得と保存
+    run_command "curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor -o /etc/apt/keyrings/microsoft.gpg" \
+        "MicrosoftのGPGキーを取得"
+
+    # リポジトリの追加
+    local vscode_repo="deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/code stable main"
+    add_apt_repository "$vscode_repo" "" "Visual Studio Codeリポジトリの追加"
+
+    # VSCodeのインストール
+    run_apt "install" "code" "Visual Studio Codeのインストール"
+
+    success "Visual Studio Codeのインストールが完了しました"
+}
+
+# VSCode設定ディレクトリのパスを取得
+get_vscode_config_dir() {
+    local config_dir
+
     case "$(uname)" in
         "Darwin")
-            vscode_config_dir="$HOME/Library/Application Support/Code/User"
+            config_dir="$HOME/Library/Application Support/Code/User"
             ;;
         "Linux")
-            vscode_config_dir="$HOME/.config/Code/User"
+            config_dir="$HOME/.config/Code/User"
             ;;
         *)
-            warn "未対応のプラットフォームです: $(uname)"
+            error "未対応のプラットフォームです: $(uname)"
             return 1
             ;;
     esac
 
+    echo "$config_dir"
+}
+
+# 設定ファイルのシンボリックリンクを作成
+setup_vscode_symlinks() {
+    log "VSCode設定ファイルのシンボリックリンクを作成しています..."
+
+    local config_dir=$(get_vscode_config_dir)
+    if [ $? -ne 0 ]; then
+        return 1
+    fi
+
     # 設定ディレクトリの作成
-    mkdir -p "$vscode_config_dir"
+    run_command "mkdir -p \"$config_dir\"" \
+        "設定ディレクトリの作成"
+
+    # dotfilesのVSCode設定ディレクトリ
+    local dotfiles_vscode_dir="${DOTFILES_ROOT}/dotfiles/tools/vscode/User"
 
     # リンクを作成する設定ファイルのリスト
     local config_files=(
@@ -32,86 +73,91 @@ setup_vscode_symlinks() {
         "snippets"
     )
 
-    # dotfilesのVSCode設定ディレクトリ
-    local dotfiles_vscode_dir="${DOTFILES_ROOT}/dotfiles/tools/vscode/User"
-
     # 各設定ファイルのシンボリックリンクを作成
     for file in "${config_files[@]}"; do
         local target="${dotfiles_vscode_dir}/${file}"
-        local link="${vscode_config_dir}/${file}"
+        local link="${config_dir}/${file}"
 
-        # ターゲットが存在する場合のみリンクを作成
         if [ -e "$target" ]; then
             # 既存のファイル/リンクの処理
             if [ -e "$link" ]; then
                 if [ -L "$link" ]; then
-                    unlink "$link"
+                    run_command "unlink \"$link\"" \
+                        "既存のシンボリックリンクを削除: $file"
                 else
-                    mv "$link" "${link}.backup"
-                    log "既存の設定ファイルをバックアップしました: ${link}.backup"
+                    run_command "mv \"$link\" \"${link}.backup\"" \
+                        "既存の設定ファイルをバックアップ: $file"
                 fi
             fi
 
             # シンボリックリンクの作成
-            ln -s "$target" "$link"
-            log "リンクを作成: $target -> $link"
+            run_command "ln -s \"$target\" \"$link\"" \
+                "シンボリックリンクを作成: $file"
         fi
     done
 
     success "VSCode設定ファイルのリンク作成が完了しました"
 }
 
-install_vscode() {
+# 拡張機能をインストール
+install_vscode_extensions() {
     if ! command -v code &> /dev/null; then
-        log "Visual Studio Codeをインストールしています..."
-        wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
-        sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
-        sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
-        rm -f packages.microsoft.gpg
-
-        sudo apt-get update
-        sudo apt-get install -y code
-
-        success "Visual Studio Codeのインストールが完了しました"
-    else
-        warn "VSCodeは既にインストールされています"
-    fi
-}
-
-setup_vscode_extensions() {
-    log "VSCode拡張機能をインストールしています..."
-
-    if ! command -v code &> /dev/null; then
-        warn "VSCodeがインストールされていません"
+        error "VSCodeが見つかりません"
         return 1
     fi
+
+    if ! command -v jq &> /dev/null; then
+        error "jqコマンドが見つかりません"
+        return 1
+    }
+
+    log "VSCode拡張機能をインストールしています..."
 
     local extensions_file="${DOTFILES_ROOT}/dotfiles/tools/vscode/User/extensions.json"
     if [ ! -f "$extensions_file" ]; then
         error "extensions.jsonが見つかりません: $extensions_file"
         return 1
-    fi
+    }
 
-    if command -v jq &> /dev/null; then
-        log "推奨拡張機能をインストールしています..."
-        local extensions
-        extensions=$(jq -r '.recommendations[]' "$extensions_file")
+    # 現在インストールされている拡張機能のリストを取得
+    local installed_extensions
+    installed_extensions=$(code --list-extensions 2>/dev/null)
 
-        echo "$extensions" | while read -r extension; do
-            if [ ! -z "$extension" ]; then
-                log "インストール中: $extension"
-                code --install-extension "$extension" || warn "$extensionのインストールに失敗しました"
+    # 推奨拡張機能をインストール
+    while read -r extension; do
+        if [ -n "$extension" ]; then
+            if echo "$installed_extensions" | grep -q "^${extension}$"; then
+                warn "拡張機能は既にインストールされています: $extension"
+            else
+                run_command "code --install-extension \"$extension\"" \
+                    "拡張機能をインストール: $extension"
             fi
-        done
-    else
-        error "jqコマンドが見つかりません。パッケージのインストールを確認してください。"
-        return 1
-    fi
+        fi
+    done < <(jq -r '.recommendations[]' "$extensions_file")
 
     success "VSCode拡張機能のインストールが完了しました"
 }
 
+# インストールされたバージョンを確認
+check_vscode_version() {
+    if command -v code &> /dev/null; then
+        log "インストールされたVSCodeのバージョン:"
+        run_command "code --version | head -n1" "VSCodeバージョンの確認" true
+    else
+        warn "VSCodeが見つかりません"
+    fi
+}
+
+# メインのセットアップ関数
 setup_vscode() {
+    log "Visual Studio Codeのセットアップを開始します..."
+
+    # GUIが利用可能か確認
+    if [ ! "$DISPLAY" ]; then
+        error "GUI環境が検出されませんでした"
+        return 1
+    fi
+
     # VSCodeのインストール
     install_vscode
 
@@ -119,5 +165,10 @@ setup_vscode() {
     setup_vscode_symlinks
 
     # 拡張機能のインストール
-    setup_vscode_extensions
+    install_vscode_extensions
+
+    # バージョン確認
+    check_vscode_version
+
+    success "Visual Studio Codeのセットアップが完了しました"
 }
