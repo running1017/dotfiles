@@ -1,7 +1,7 @@
 # エイリアスファイルのローダー
 
 # エイリアスディレクトリのパス
-ALIASES_DIR="$HOME/.aliases"
+ALIASES_DIR="$HOME/.aliases.d"
 
 # 基本的なエイリアス
 if [ -f "$ALIASES_DIR/basic.sh" ]; then

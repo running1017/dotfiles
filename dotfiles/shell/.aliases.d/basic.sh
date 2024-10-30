@@ -6,9 +6,9 @@ mkcd() {
 }
 
 # Ezaによるリスト表示のエイリアス
-alias ei="eza --git"
-alias ea="eza -a --git"
-alias ee="eza -aahl --git"
+alias ei="eza --git --icons"
+alias ea="eza -a --git --icons"
+alias ee="eza -aahl --git --icons"
 
 # ツリー表示コマンド
 alias et="eza -T -a -I 'node_modules|.git|.cache'"
