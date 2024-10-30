@@ -22,7 +22,7 @@ alias dlog="docker logs"
 
 # Python開発
 alias venv="python3 -m venv venv"
-alias activate="source venv/bin/activate"
+alias activate="source .venv/bin/activate"
 alias pip="pip3"
 alias python="python3"
 
