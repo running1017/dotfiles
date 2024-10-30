@@ -2,8 +2,7 @@
 shell/.vimrc              ${HOME}/.vimrc
 
 # shell
-shell/.zsh.d            ${HOME}/.zsh.d
-shell/.zshenv           ${HOME}/.zshenv
+shell/.zshrc            ${HOME}/.zshrc
 shell/.aliases.d        ${HOME}/.aliases.d
 
 # 汎用ツール

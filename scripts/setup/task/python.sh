@@ -48,7 +48,7 @@ install_rye() {
 configure_rye_env() {
     log "ryeの環境変数を設定しています..."
     
-    local zshrc="$HOME/.zsh.d/.zshrc"
+    local zshrc="$HOME/.zshrc"
     local rye_env='source "$HOME/.rye/env"'
 
     if [ -f "$zshrc" ]; then
