@@ -105,8 +105,8 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # Load aliases
-if [ -f "$HOME/.aliases/loader.sh" ]; then
-    source "$HOME/.aliases/loader.sh"
+if [ -f "$HOME/.aliases.d/loader.sh" ]; then
+    source "$HOME/.aliases.d/loader.sh"
 fi
 
 # custom tools

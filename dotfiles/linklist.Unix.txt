@@ -1,9 +1,10 @@
 # vim
-vim/.vim                ${HOME}/.vim
+vim/.vimrc              ${HOME}/.vimrc
 
-# zsh
-zsh/.zsh.d              ${HOME}/.zsh.d
-zsh/.zshenv             ${HOME}/.zshenv
+# shell
+shell/.zsh.d            ${HOME}/.zsh.d
+shell/.zshenv           /etc/zsh/.zshenv
+shell/.aliases.d        ${HOME}/.aliases.d
 
 # 汎用ツール
 bin                     ${HOME}/.local/bin
