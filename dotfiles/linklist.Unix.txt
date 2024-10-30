@@ -1,9 +1,9 @@
 # vim
-vim/.vimrc              ${HOME}/.vimrc
+shell/.vimrc              ${HOME}/.vimrc
 
 # shell
 shell/.zsh.d            ${HOME}/.zsh.d
-shell/.zshenv           /etc/zsh/.zshenv
+shell/.zshenv           ${HOME}/.zshenv
 shell/.aliases.d        ${HOME}/.aliases.d
 
 # 汎用ツール

@@ -25,7 +25,7 @@ post_setup() {
     # 各種パスの確認
     local check_paths=(
         "${real_home}/.oh-my-zsh"
-        "${real_home}/.aliases"
+        "${real_home}/.aliases.d"
         "${real_home}/.zsh.d"
     )
 

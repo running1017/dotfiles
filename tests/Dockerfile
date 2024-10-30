@@ -1,27 +1,20 @@
 FROM debian:latest
 
-# 必要なパッケージのインストール
-RUN apt update && apt install -y \
-    git \
+# 最小限必要なパッケージのインストール（sudo）
+RUN apt-get update && apt-get install -y \
     sudo \
     && rm -rf /var/lib/apt/lists/*
 
-# テストユーザーの作成
+# テストユーザーの作成とsudo権限の付与
 RUN useradd -m -s /bin/bash testuser && \
     usermod -aG sudo testuser && \
-    echo "testuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+    echo "testuser:testpass" | chpasswd && \
+    echo 'testuser ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-# テストユーザーとしてセットアップを実行
-USER testuser
+# 作業ディレクトリの設定
 WORKDIR /home/testuser
 
-# ローカルのdotfilesをマウントするためのディレクトリを作成
-RUN mkdir -p /home/testuser/.dotfiles
+# デフォルトユーザーをtestuserに設定
+USER testuser
 
-# テスト実行時の環境変数を設定
-ENV HOME=/home/testuser \
-    USER=testuser \
-    SHELL=/bin/bash
-
-# コンテナ起動時のデフォルトコマンド
-CMD ["bash"]
+CMD ["/bin/bash"]

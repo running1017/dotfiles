@@ -14,7 +14,18 @@ source "${SETUP_DIR}/post_setup.sh"
 main() {
     clear
     log "Debian系環境セットアップスクリプト"
-    init_setup
+
+    # rootで実行された場合の処理
+    if [ "$(id -u)" = "0" ]; then
+        error "このスクリプトはrootとして直接実行せず、必要な場合はsudoを使用してください"
+        exit 1
+    fi
+
+    # sudoの権限をチェック
+    if ! sudo -v; then
+        error "このスクリプトの実行にはsudo権限が必要です"
+        exit 1
+    fi
 
     local selected=()
     if [[ "$1" == "--auto" || "$1" == "--no-interactive" ]]; then

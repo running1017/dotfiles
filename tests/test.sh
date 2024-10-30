@@ -11,11 +11,13 @@ fi
 # テスト用コンテナを起動
 echo "テストコンテナをビルドして実行します..."
 docker build -t dotfiles-test tests/
+
+# コンテナを起動し、セットアップスクリプトを実行
 docker run -it \
     -v "${PROJECT_ROOT}:/home/testuser/.dotfiles" \
     --name dotfiles-test-container \
     dotfiles-test \
-    bash -c "cd ~/.dotfiles && sudo ./scripts/setup.sh --auto"
+    bash -c "cd ~/.dotfiles && ./scripts/setup.sh --auto"
 
 # コンテナの状態を確認
 CONTAINER_ID=$(docker ps -q -f name=dotfiles-test-container)
@@ -25,19 +27,19 @@ echo -e "\nテスト環境に接続するには以下のコマンドをコピー
 
 if [ "$CONTAINER_STATE" = "exited" ]; then
     echo -e "\nコンテナ名を使用する場合:"
-    echo -e "\033[36mdocker start dotfiles-test-container && docker exec -it -u testuser dotfiles-test-container /bin/sh -c \"\$SHELL\"\033[0m"
+    echo -e "\033[36mdocker start dotfiles-test-container && docker exec -it dotfiles-test-container bash\033[0m"
     
     if [ -n "$CONTAINER_ID" ]; then
         echo -e "\nまたは、コンテナIDを使用する場合:"
-        echo -e "\033[36mdocker start $CONTAINER_ID && docker exec -it -u testuser $CONTAINER_ID /bin/sh -c \"\$SHELL\"\033[0m"
+        echo -e "\033[36mdocker start $CONTAINER_ID && docker exec -it $CONTAINER_ID bash\033[0m"
     fi
 else
     echo -e "\nコンテナ名を使用する場合:"
-    echo -e "\033[36mdocker exec -it -u testuser dotfiles-test-container /bin/sh -c \"\$SHELL\"\033[0m"
+    echo -e "\033[36mdocker exec -it dotfiles-test-container bash\033[0m"
     
     if [ -n "$CONTAINER_ID" ]; then
         echo -e "\nまたは、コンテナIDを使用する場合:"
-        echo -e "\033[36mdocker exec -it -u testuser $CONTAINER_ID /bin/sh -c \"\$SHELL\"\033[0m"
+        echo -e "\033[36mdocker exec -it $CONTAINER_ID bash\033[0m"
     fi
 fi
 
