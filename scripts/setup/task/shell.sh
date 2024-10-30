@@ -5,6 +5,14 @@ source "${SETUP_DIR}/utils.sh"
 setup_zsh() {
     log "Zshの設定を行っています..."
 
+    # 実際のユーザー名を取得
+    local current_user
+    if [ -n "$SUDO_USER" ]; then
+        current_user="$SUDO_USER"
+    else
+        current_user="$(whoami)"
+    fi
+
     # oh-my-zshのインストール
     if [ ! -d "$HOME/.oh-my-zsh" ]; then
         log "oh-my-zshをインストールしています..."
@@ -29,7 +37,7 @@ setup_zsh() {
     # デフォルトシェルの変更
     if [ "$SHELL" != "$(which zsh)" ]; then
         log "デフォルトシェルをZshに変更しています..."
-        sudo chsh -s "$(which zsh)" "$USER" || warn "デフォルトシェルの変更に失敗しました"
+        sudo chsh -s "$(which zsh)" "$current_user" || warn "デフォルトシェルの変更に失敗しました"
     fi
 
     success "Zshの設定が完了しました"
