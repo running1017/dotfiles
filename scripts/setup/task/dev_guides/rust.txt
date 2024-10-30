@@ -1,0 +1,10 @@
+1. rustupを使用したRustのインストール:
+   ${CMD}curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh${CMD}
+   ${CMD}source ~/.bashrc${CMD}  # または ${CMD}source ~/.zshrc${CMD}
+
+2. 開発に必要なツール:
+   ${CMD}rustup component add rustfmt${CMD}
+   ${CMD}rustup component add clippy${CMD}
+   ${CMD}rustup component add rust-analyzer${CMD}
+
+詳細: https://www.rust-lang.org/tools/install

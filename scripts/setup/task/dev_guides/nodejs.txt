@@ -1,0 +1,14 @@
+1. nvmのインストール:
+   ${CMD}curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash${CMD}
+   ${CMD}source ~/.bashrc${CMD}  # または ${CMD}source ~/.zshrc${CMD}
+
+2. Node.js LTSのインストール:
+   ${CMD}nvm install --lts && nvm use --lts && nvm alias default 'lts/*'${CMD}
+
+3. npmの更新:
+   ${CMD}npm install -g npm@latest${CMD}
+
+4. グローバルパッケージのインストール:
+   ${CMD}npm install -g typescript ts-node gitmoji-cli${CMD}
+
+詳細: https://github.com/nvm-sh/nvm#installing-and-updating

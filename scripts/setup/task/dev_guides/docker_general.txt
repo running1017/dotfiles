@@ -1,0 +1,10 @@
+ご利用のシステムに応じた適切なインストール方法については、
+以下の公式ドキュメントをご確認ください:
+
+- Debian: https://docs.docker.com/engine/install/debian/
+- Ubuntu: https://docs.docker.com/engine/install/ubuntu/
+- その他: https://docs.docker.com/engine/install/
+
+インストール後の設定:
+${CMD}sudo usermod -aG docker $USER
+newgrp docker${CMD}

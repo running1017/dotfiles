@@ -5,9 +5,7 @@ source "${SETUP_DIR}/utils.sh"
 # 各タスクモジュールの読み込み
 source "${SETUP_DIR}/task/package.sh"
 source "${SETUP_DIR}/task/shell.sh"
-source "${SETUP_DIR}/task/node.sh"
-source "${SETUP_DIR}/task/python.sh"
-source "${SETUP_DIR}/task/docker.sh"
+source "${SETUP_DIR}/task/dev_guides.sh"
 source "${SETUP_DIR}/task/dotfiles.sh"
 source "${SETUP_DIR}/task/gui/main.sh"
 source "${SETUP_DIR}/task/ssh.sh"
@@ -21,9 +19,7 @@ execute_tasks() {
         "base_packages"
         "shell"
         "dotfiles"
-        "nodejs"
-        "python"
-        "docker"
+        "dev_guides"
         "gui_tools"
         "ssh"
     )
@@ -35,9 +31,7 @@ execute_tasks() {
                 "base_packages") install_base_packages ;;
                 "shell") setup_zsh ;;
                 "dotfiles") setup_dotfiles ;;
-                "nodejs") install_nodejs ;;
-                "python") setup_python ;;
-                "docker") install_docker ;;
+                "dev_guides") show_dev_guides ;;
                 "gui_tools") install_gui_tools ;;
                 "ssh") setup_ssh ;;
             esac
