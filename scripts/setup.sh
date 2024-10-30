@@ -7,7 +7,7 @@ SETUP_DIR="${DOTFILES_ROOT}/scripts/setup"
 # 必要なスクリプトの読み込み
 source "${SETUP_DIR}/config.sh"
 source "${SETUP_DIR}/ui.sh"
-source "${SETUP_DIR}/tasks/main.sh"
+source "${SETUP_DIR}/task/main.sh"
 source "${SETUP_DIR}/post_setup.sh"
 
 # メイン処理

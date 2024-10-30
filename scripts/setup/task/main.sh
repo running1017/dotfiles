@@ -3,14 +3,14 @@
 source "${SETUP_DIR}/utils.sh"
 
 # 各タスクモジュールの読み込み
-source "${SETUP_DIR}/tasks/package.sh"
-source "${SETUP_DIR}/tasks/shell.sh"
-source "${SETUP_DIR}/tasks/node.sh"
-source "${SETUP_DIR}/tasks/python.sh"
-source "${SETUP_DIR}/tasks/docker.sh"
-source "${SETUP_DIR}/tasks/dotfiles.sh"
-source "${SETUP_DIR}/tasks/gui.sh"
-source "${SETUP_DIR}/tasks/ssh.sh"
+source "${SETUP_DIR}/task/package.sh"
+source "${SETUP_DIR}/task/shell.sh"
+source "${SETUP_DIR}/task/node.sh"
+source "${SETUP_DIR}/task/python.sh"
+source "${SETUP_DIR}/task/docker.sh"
+source "${SETUP_DIR}/task/dotfiles.sh"
+source "${SETUP_DIR}/task/gui.sh"
+source "${SETUP_DIR}/task/ssh.sh"
 
 # タスク実行の制御関数
 execute_tasks() {
