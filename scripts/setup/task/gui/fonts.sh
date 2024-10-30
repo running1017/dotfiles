@@ -14,7 +14,7 @@ install_hackgen_font() {
         cp hackgen/HackGen_NF_${HACKGEN_VERSION}/*.ttf "$FONT_DIR/"
         rm -rf hackgen "HackGen_NF_${HACKGEN_VERSION}.zip"
         fc-cache -f
-        
+
         success "HackGenフォントのインストールが完了しました"
     else
         warn "HackGenフォントは既にインストールされています"

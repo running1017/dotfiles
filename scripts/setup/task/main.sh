@@ -15,7 +15,7 @@ source "${SETUP_DIR}/task/ssh.sh"
 # タスク実行の制御関数
 execute_tasks() {
     local selected=("$@")
-    
+
     # タスクの実行順序を定義
     local task_order=(
         "base_packages"

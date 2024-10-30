@@ -71,7 +71,7 @@ install_vscode() {
 
         sudo apt-get update
         sudo apt-get install -y code
-        
+
         success "Visual Studio Codeのインストールが完了しました"
     else
         warn "VSCodeは既にインストールされています"
@@ -96,7 +96,7 @@ setup_vscode_extensions() {
         log "推奨拡張機能をインストールしています..."
         local extensions
         extensions=$(jq -r '.recommendations[]' "$extensions_file")
-        
+
         echo "$extensions" | while read -r extension; do
             if [ ! -z "$extension" ]; then
                 log "インストール中: $extension"
