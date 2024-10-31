@@ -2,33 +2,6 @@
 
 source "${SETUP_DIR}/utils.sh"
 
-# VSCodeのリポジトリとパッケージをインストール
-install_vscode() {
-    if command -v code &> /dev/null; then
-        warn "Visual Studio Codeは既にインストールされています"
-        return 0
-    fi
-
-    log "Visual Studio Codeをインストールしています..."
-
-    # キーリングディレクトリの作成
-    run_command "sudo install -m 0755 -d /etc/apt/keyrings" \
-        "キーリングディレクトリの作成"
-
-    # GPGキーの取得と保存
-    run_command "curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor -o /etc/apt/keyrings/microsoft.gpg" \
-        "MicrosoftのGPGキーを取得"
-
-    # リポジトリの追加
-    local vscode_repo="deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/code stable main"
-    add_apt_repository "$vscode_repo" "" "Visual Studio Codeリポジトリの追加"
-
-    # VSCodeのインストール
-    run_apt "install" "code" "Visual Studio Codeのインストール"
-
-    success "Visual Studio Codeのインストールが完了しました"
-}
-
 # VSCode設定ディレクトリのパスを取得
 get_vscode_config_dir() {
     local config_dir
@@ -71,6 +44,7 @@ setup_vscode_symlinks() {
         "keybindings.json"
         "locale.json"
         "snippets"
+        "extensions.json"
     )
 
     # 各設定ファイルのシンボリックリンクを作成
@@ -99,76 +73,14 @@ setup_vscode_symlinks() {
     success "VSCode設定ファイルのリンク作成が完了しました"
 }
 
-# 拡張機能をインストール
-install_vscode_extensions() {
-    if ! command -v code &> /dev/null; then
-        error "VSCodeが見つかりません"
-        return 1
-    fi
-
-    if ! command -v jq &> /dev/null; then
-        error "jqコマンドが見つかりません"
-        return 1
-    }
-
-    log "VSCode拡張機能をインストールしています..."
-
-    local extensions_file="${DOTFILES_ROOT}/dotfiles/tools/vscode/User/extensions.json"
-    if [ ! -f "$extensions_file" ]; then
-        error "extensions.jsonが見つかりません: $extensions_file"
-        return 1
-    }
-
-    # 現在インストールされている拡張機能のリストを取得
-    local installed_extensions
-    installed_extensions=$(code --list-extensions 2>/dev/null)
-
-    # 推奨拡張機能をインストール
-    while read -r extension; do
-        if [ -n "$extension" ]; then
-            if echo "$installed_extensions" | grep -q "^${extension}$"; then
-                warn "拡張機能は既にインストールされています: $extension"
-            else
-                run_command "code --install-extension \"$extension\"" \
-                    "拡張機能をインストール: $extension"
-            fi
-        fi
-    done < <(jq -r '.recommendations[]' "$extensions_file")
-
-    success "VSCode拡張機能のインストールが完了しました"
-}
-
-# インストールされたバージョンを確認
-check_vscode_version() {
-    if command -v code &> /dev/null; then
-        log "インストールされたVSCodeのバージョン:"
-        run_command "code --version | head -n1" "VSCodeバージョンの確認" true
-    else
-        warn "VSCodeが見つかりません"
-    fi
-}
-
 # メインのセットアップ関数
 setup_vscode() {
-    log "Visual Studio Codeのセットアップを開始します..."
+    log "Visual Studio Code設定ファイルのセットアップを開始します..."
 
-    # GUIが利用可能か確認
-    if [ ! "$DISPLAY" ]; then
-        error "GUI環境が検出されませんでした"
+    if ! setup_vscode_symlinks; then
+        error "VSCode設定ファイルのセットアップに失敗しました"
         return 1
     fi
 
-    # VSCodeのインストール
-    install_vscode
-
-    # 設定ファイルのシンボリックリンクを作成
-    setup_vscode_symlinks
-
-    # 拡張機能のインストール
-    install_vscode_extensions
-
-    # バージョン確認
-    check_vscode_version
-
-    success "Visual Studio Codeのセットアップが完了しました"
+    success "Visual Studio Code設定ファイルのセットアップが完了しました"
 }

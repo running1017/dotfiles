@@ -29,7 +29,3 @@ MENU_ORDER=(
     "dotfiles"
     "ssh"
 )
-
-# スクリプトのパスを設定
-SETUP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SCRIPTS_DIR="${SETUP_DIR}/scripts"

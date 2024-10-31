@@ -23,26 +23,34 @@ setup_font_directories() {
 
 # HackGenフォントのダウンロードと展開
 download_hackgen_font() {
-    log "HackGenフォントをダウンロードしています..."
+    # 一時ディレクトリの作成（エラー出力を抑制）
+    local temp_dir
+    temp_dir=$(mktemp -d 2>/dev/null) || return 1
 
-    local work_dir
-    work_dir=$(mktemp -d)
-    log "作業ディレクトリ: $work_dir"
+    {
+        log "HackGenフォントをダウンロードしています..."
+        log "作業ディレクトリ: $temp_dir"
 
-    # バージョン定義
-    local version="v2.9.0"
-    local filename="HackGen_NF_${version}"
-    local url="https://github.com/yuru7/HackGen/releases/download/${version}/${filename}.zip"
+        # バージョン定義
+        local version="v2.9.0"
+        local filename="HackGen_NF_${version}"
+        local url="https://github.com/yuru7/HackGen/releases/download/${version}/${filename}.zip"
 
-    # ダウンロード
-    run_command "curl -L -o \"${work_dir}/${filename}.zip\" \"$url\"" \
-        "HackGenフォントのダウンロード"
+        # ダウンロード（標準出力とエラー出力を/dev/nullに捨てる）
+        if ! curl -L -s -o "${temp_dir}/${filename}.zip" "$url" 2>/dev/null; then
+            rm -rf "$temp_dir"
+            return 1
+        fi
 
-    # 展開
-    run_command "unzip -q \"${work_dir}/${filename}.zip\" -d \"${work_dir}/hackgen\"" \
-        "フォントファイルの展開"
+        # 展開（標準出力とエラー出力を/dev/nullに捨てる）
+        if ! unzip -q "${temp_dir}/${filename}.zip" -d "${temp_dir}/hackgen" 2>/dev/null; then
+            rm -rf "$temp_dir"
+            return 1
+        fi
+    } >&2 # すべてのログ出力をステラーエラー出力にリダイレクト
 
-    echo "$work_dir"
+    # 成功した場合のみパスを標準出力に出力
+    echo "$temp_dir"
 }
 
 # フォントファイルのインストール
@@ -52,15 +60,20 @@ install_font_files() {
     log "フォントファイルをインストールしています..."
 
     # フォントファイルのコピー
-    run_command "cp \"${work_dir}/hackgen/HackGen_NF_\"*/*.ttf \"$font_dir/\"" \
-        "フォントファイルのコピー"
+    if [ -d "${work_dir}/hackgen" ]; then
+        run_command "cp ${work_dir}/hackgen/HackGen_NF_*/*.ttf \"${font_dir}/\"" \
+            "フォントファイルのコピー"
+    else
+        error "フォントディレクトリが見つかりません: ${work_dir}/hackgen"
+        return 1
+    fi
 
     # 作業ディレクトリの削除
     run_command "rm -rf \"$work_dir\"" \
         "一時ファイルの削除"
 }
 
-# フォントキャッシュの更新
+# 残りの関数は変更なし
 update_font_cache() {
     log "フォントキャッシュを更新しています..."
 
@@ -77,12 +90,11 @@ update_font_cache() {
     fi
 }
 
-# インストール済みフォントの確認
 check_installed_fonts() {
     if ! command -v fc-list &> /dev/null; then
         warn "fc-listが見つかりません。fontconfigパッケージをインストールしてください。"
         return 1
-    }
+    fi
 
     log "インストールされたHackGenフォントを確認しています..."
     if fc-list | grep -i "HackGen" > /dev/null; then
@@ -100,7 +112,6 @@ check_installed_fonts() {
     fi
 }
 
-# 必要なパッケージの確認とインストール
 install_font_dependencies() {
     log "フォント関連パッケージをインストールしています..."
 
@@ -115,9 +126,11 @@ install_font_dependencies() {
     done
 }
 
-# HackGenフォントのインストール
 install_hackgen_font() {
     log "HackGenフォントのインストールを開始します..."
+
+    # 依存パッケージのインストール
+    install_font_dependencies
 
     # すでにインストールされているか確認
     if fc-list | grep -i "HackGenConsoleNF-Regular" > /dev/null; then
@@ -128,15 +141,12 @@ install_hackgen_font() {
 
     local work_dir
 
-    # 依存パッケージのインストール
-    install_font_dependencies
-
     # フォントディレクトリの準備
     setup_font_directories
 
     # フォントのダウンロードと展開
     work_dir=$(download_hackgen_font)
-    if [ $? -ne 0 ]; then
+    if [ $? -ne 0 ] || [ -z "$work_dir" ]; then
         error "フォントのダウンロードに失敗しました"
         return 1
     fi
@@ -153,15 +163,8 @@ install_hackgen_font() {
     success "HackGenフォントのインストールが完了しました"
 }
 
-# メインのセットアップ関数
 setup_fonts() {
     log "フォントのセットアップを開始します..."
-
-    # GUI環境の確認
-    if [ ! "$DISPLAY" ]; then
-        error "GUI環境が検出されませんでした"
-        return 1
-    fi
 
     # HackGenフォントのインストール
     install_hackgen_font

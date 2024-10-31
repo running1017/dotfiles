@@ -11,11 +11,11 @@ source "${SETUP_DIR}/task/gui/fonts.sh"
 install_gui_tools() {
     log "GUIツールのインストールを開始します..."
 
-    # VSCode
-    setup_vscode
-
     # フォント
     setup_fonts
+
+    # VSCode
+    setup_vscode
 
     # 将来的な他のGUIツール
     # setup_browser
