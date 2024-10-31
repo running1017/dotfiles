@@ -6,7 +6,6 @@ SETUP_DIR="${DOTFILES_ROOT}/scripts/setup"
 
 # 必要なスクリプトの読み込み
 source "${SETUP_DIR}/config.sh"
-source "${SETUP_DIR}/ui.sh"
 source "${SETUP_DIR}/utils.sh"
 source "${SETUP_DIR}/task/main.sh"
 
@@ -31,11 +30,12 @@ main() {
         exit 1
     fi
 
-    local selected_items=""
     local selected_array=()
+    local show_help=false
 
-    if [[ "$1" == "--auto" || "$1" == "--no-interactive" ]]; then
-        echo "自動モードで実行します..." >&3
+    # 引数の解析
+    if [[ $# -eq 0 ]]; then
+        echo "引数が指定されていないため、デフォルトの選択状態を使用します..." >&3
         # デフォルトの選択状態から選択項目を決定
         for key in "${!DEFAULT_SELECTIONS[@]}"; do
             if [[ "${DEFAULT_SELECTIONS[$key]}" == "true" ]]; then
@@ -43,14 +43,51 @@ main() {
             fi
         done
     else
-        echo "対話モードで実行します..." >&3
-        # インタラクティブな選択プロセスを実行
-        selected_items=$(run_interactive_selection)
-        if [ $? -ne 0 ]; then
-            echo -e "\033[0;31m[ERROR] 選択プロセスでエラーが発生しました\033[0m" >&4
-            exit 1
-        fi
-        read -r -a selected_array <<< "$selected_items"
+        # コマンドライン引数の処理
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --base_packages)
+                    selected_array+=("base_packages")
+                    shift
+                    ;;
+                --shell)
+                    selected_array+=("shell")
+                    shift
+                    ;;
+                --dev_guides)
+                    selected_array+=("dev_guides")
+                    shift
+                    ;;
+                --gui_tools)
+                    selected_array+=("gui_tools")
+                    shift
+                    ;;
+                --dotfiles)
+                    selected_array+=("dotfiles")
+                    shift
+                    ;;
+                --ssh)
+                    selected_array+=("ssh")
+                    shift
+                    ;;
+                --all)
+                    selected_array=()
+                    for key in "${!MENU_ITEMS[@]}"; do
+                        selected_array+=("$key")
+                    done
+                    shift
+                    ;;
+                --help|-h)
+                    display_help
+                    exit 0
+                    ;;
+                *)
+                    echo -e "\033[0;31m[ERROR] 不明なオプション: $1\033[0m" >&2
+                    display_help
+                    exit 1
+                    ;;
+            esac
+        done
     fi
 
     if [ ${#selected_array[@]} -eq 0 ]; then
@@ -58,8 +95,9 @@ main() {
         exit 1
     fi
 
-    # 選択内容の最終確認を表示
-    display_selections "$selected_items" >&3
+    # 選択内容を表示
+    display_selections "${selected_array[@]}"
+
     echo -e "セットアップを開始します..." >&3
     sleep 1
 
@@ -75,9 +113,6 @@ main() {
     exec 3>&-
     exec 4>&-
 }
-
-# エラーが発生した場合の処理を追加
-trap 'echo -e "\033[0;31m[ERROR] スクリプトの実行中にエラーが発生しました\033[0m" >&4; exit 1' ERR
 
 # スクリプトの実行
 main "$@"

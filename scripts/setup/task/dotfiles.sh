@@ -41,7 +41,7 @@ ln_file() {
     else
         # 通常のユーザーとして実行
         mkdir -p "$(dirname "$link")"
-        
+
         if [ -e "$link" ]; then
             if [ -L "$link" ]; then
                 unlink "$link"

@@ -9,6 +9,9 @@ GRAY='\033[0;90m'
 NC='\033[0m'
 BOLD='\033[1m'
 
+# 必要な設定を読み込み
+source "${SETUP_DIR}/config.sh"
+
 # 基本的なログ関数
 log() {
     echo -e "${BLUE}[$(date +'%Y-%m-%d %H:%M:%S')] $1${NC}"
@@ -27,12 +30,6 @@ error() {
     exit 1
 }
 
-# インデント付きで出力を表示する関数
-show_output() {
-    local output="$1"
-    echo -e "${GRAY}$(echo "$output" | sed 's/^/    /')${NC}"
-}
-
 # コマンドを実行し、出力を表示する関数
 run_command() {
     local command_str="$1"
@@ -46,18 +43,19 @@ run_command() {
     fi
 
     # コマンドの実行結果を一時ファイルに保存
-    local temp_file=$(mktemp)
+    local temp_file
+    temp_file=$(mktemp)
     local exit_status=0
 
     if eval "$command_str" > "$temp_file" 2>&1; then
         if [ "$show_output" = true ] && [ -s "$temp_file" ]; then
-            show_output "$(cat "$temp_file")"
+            echo -e "${GRAY}$(cat "$temp_file")${NC}"
         fi
         success "$description が完了しました"
     else
         exit_status=$?
         if [ -s "$temp_file" ]; then
-            show_output "$(cat "$temp_file")"
+            echo -e "${GRAY}$(cat "$temp_file")${NC}"
         fi
         error "$error_message (exit code: $exit_status)"
     fi
@@ -92,25 +90,6 @@ run_apt() {
     esac
 }
 
-# リポジトリの追加用関数
-add_apt_repository() {
-    local repo="$1"
-    local key_url="$2"
-    local description="$3"
-
-    log "$description"
-
-    if [ -n "$key_url" ]; then
-        run_command "curl -fsSL $key_url | sudo gpg --dearmor -o /etc/apt/keyrings/$(basename "$key_url").gpg" \
-            "GPGキーの追加" false
-    fi
-
-    run_command "echo \"$repo\" | sudo tee /etc/apt/sources.list.d/$(echo "$repo" | md5sum | cut -d' ' -f1).list > /dev/null" \
-        "リポジトリの追加" false
-
-    run_apt "update"
-}
-
 # 汎用的なシステム関数
 check_sudo() {
     if ! sudo -v; then
@@ -128,4 +107,46 @@ mkdir_recursive() {
         fi
         echo "mkdir: \"$1\"" >&2
     fi
+}
+
+# ヘルプを表示する関数
+display_help() {
+    echo "Usage: $0 [options]"
+    echo ""
+    echo "オプション:"
+    echo "  --all              すべての項目を選択します"
+    echo "  --base_packages    基本的なコマンドラインツールをインストールします"
+    echo "  --shell            zsh, eza, starshipのセットアップを行います"
+    echo "  --dev_guides       Node.js, Python, Rust, Dockerのセットアップガイドを表示します"
+    echo "  --gui_tools        VSCodeとHackGenフォントをインストールします"
+    echo "  --dotfiles         設定ファイルのシンボリックリンクを作成します"
+    echo "  --ssh              SSH鍵を生成します"
+    echo "  -h, --help         このヘルプを表示します"
+    echo ""
+    echo "引数を指定しない場合、デフォルトの選択状態が使用されます。"
+}
+
+# 選択された項目を表示する関数
+display_selections() {
+    local selected_items=("$@")
+
+    echo -e "${BOLD}選択された項目:${NC}" >&3
+    echo -e "${BLUE}----------------------------------------${NC}" >&3
+
+    for key in "${MENU_ORDER[@]}"; do
+        local item="${MENU_ITEMS[$key]}"
+        [ -z "$item" ] && continue
+
+        local name="${item%%:*}"
+        local description="${item#*:}"
+        local status="[ ]"
+
+        if [[ " ${selected_items[*]} " =~ " ${key} " ]]; then
+            status="${GREEN}[×]${NC}"
+        fi
+
+        printf "%-3b %-20s %s\n" "$status" "$name" "- $description" >&3
+    done
+
+    echo -e "${BLUE}----------------------------------------${NC}" >&3
 }

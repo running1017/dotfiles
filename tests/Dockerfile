@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y \
 # テストユーザーの作成とsudo権限の付与
 RUN useradd -m -s /bin/bash testuser && \
     usermod -aG sudo testuser && \
-    echo "testuser:testpass" | chpasswd && \
+    echo "testuser:pw" | chpasswd && \
     echo 'testuser ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 # 作業ディレクトリの設定

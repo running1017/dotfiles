@@ -5,14 +5,14 @@ source "${SETUP_DIR}/utils.sh"
 # ezaのインストール関数
 install_eza() {
     log "ezaをインストールしています..."
-    
+
     # 必要なディレクトリの作成
     sudo mkdir -p /etc/apt/keyrings
 
     # GPGキーの取得と変換を一つのコマンドで実行
     run_command "curl -fsSL https://raw.githubusercontent.com/eza-community/eza/main/deb.asc | sudo gpg --dearmor -o /etc/apt/keyrings/gierens.gpg" \
         "ezaのGPGキーを取得しています"
-    
+
     # キーリングファイルのパーミッション設定
     run_command "sudo chmod 644 /etc/apt/keyrings/gierens.gpg" \
         "GPGキーファイルの権限を設定"
@@ -38,7 +38,7 @@ install_starship() {
     fi
 
     log "starshipをインストールしています..."
-    
+
     # インストールスクリプトの実行
     run_command 'curl -sS https://starship.rs/install.sh | sh -s -- --yes' \
         "starshipのインストール"

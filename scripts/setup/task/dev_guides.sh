@@ -8,10 +8,10 @@ show_guide() {
     local title="$2"
     if [ -f "$guide_file" ]; then
         echo -e "\n${BLUE}=== $title ===${NC}"
-        
+
         # perlを使用してコマンドを色付け
         perl -pe 's/\${CMD}(.*?)\${CMD}/'"${YELLOW}\1${NC}"'/g' "$guide_file"
-        
+
         echo # 空行を追加して見やすくする
     else
         error "ガイドファイルが見つかりません: $guide_file"
@@ -19,7 +19,7 @@ show_guide() {
 }
 
 show_dev_guides() {
-    local guides_dir="${SETUP_DIR}/task/dev"
+    local guides_dir="${SETUP_DIR}/task/dev_guides"
     log "開発環境のセットアップガイドを表示します..."
 
     # Node.jsガイド

@@ -89,7 +89,7 @@ check_installed_fonts() {
         local font_count
         font_count=$(fc-list | grep -i "HackGen" | wc -l)
         success "HackGenフォント($font_count個)が正常にインストールされています"
-        
+
         # 詳細なフォント情報の表示
         log "インストールされたHackGenフォントの詳細:"
         run_command "fc-list | grep -i 'HackGen' | sort" \

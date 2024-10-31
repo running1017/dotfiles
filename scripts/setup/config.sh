@@ -14,10 +14,20 @@ declare -A DEFAULT_SELECTIONS=(
 declare -A MENU_ITEMS=(
     ["base_packages"]="base_packages:基本的なコマンドラインツールをインストールします"
     ["shell"]="shell:zsh, eza, starshipのセットアップを行います"
-    ["dev_guides"]="Development:Node.js, Python, Rust, Dockerのセットアップガイドを表示します"
-    ["gui_tools"]="GUI:VSCodeとHackGenフォントをインストールします"
-    ["dotfiles"]="Dotfiles:設定ファイルのシンボリックリンクを作成します"
-    ["ssh"]="SSH:SSH鍵を生成します"
+    ["dev_guides"]="dev_guides:Node.js, Python, Rust, Dockerのセットアップガイドを表示します"
+    ["gui_tools"]="gui_tools:VSCodeとHackGenフォントをインストールします"
+    ["dotfiles"]="dotfiles:設定ファイルのシンボリックリンクを作成します"
+    ["ssh"]="ssh:SSH鍵を生成します"
+)
+
+# メニュー項目の順序を定義
+MENU_ORDER=(
+    "base_packages"
+    "shell"
+    "dev_guides"
+    "gui_tools"
+    "dotfiles"
+    "ssh"
 )
 
 # スクリプトのパスを設定
