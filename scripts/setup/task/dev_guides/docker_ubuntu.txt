@@ -1,27 +1,27 @@
 1. 古いパッケージの削除:
-   ${CMD}for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do
-       sudo apt-get remove $pkg
-   done${CMD}
+   ${CMD}for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do${CMD}
+   ${CMD}   sudo apt-get remove $pkg${CMD}
+   ${CMD}done${CMD}
 
 2. GPGキーとリポジトリの追加:
-   ${CMD}sudo apt-get update
-   sudo apt-get install ca-certificates curl
-   sudo install -m 0755 -d /etc/apt/keyrings
-   sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-   sudo chmod a+r /etc/apt/keyrings/docker.asc${CMD}
+   ${CMD}sudo apt-get update${CMD}
+   ${CMD}sudo apt-get install ca-certificates curl${CMD}
+   ${CMD}sudo install -m 0755 -d /etc/apt/keyrings${CMD}
+   ${CMD}sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc${CMD}
+   ${CMD}sudo chmod a+r /etc/apt/keyrings/docker.asc${CMD}
 
 3. リポジトリの設定:
-   ${CMD}echo \
-     "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-     $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-     sudo tee /etc/apt/sources.list.d/docker.list > /dev/null${CMD}
+   ${CMD}echo \${CMD}
+   ${CMD}  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \${CMD}
+   ${CMD}  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \${CMD}
+   ${CMD}  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null${CMD}
 
 4. Dockerのインストール:
-   ${CMD}sudo apt-get update
-   sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin${CMD}
+   ${CMD}sudo apt-get update${CMD}
+   ${CMD}sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin${CMD}
 
 5. ユーザーをdockerグループに追加:
-   ${CMD}sudo usermod -aG docker $USER
-   newgrp docker${CMD}
+   ${CMD}sudo usermod -aG docker $USER${CMD}
+   ${CMD}newgrp docker${CMD}
 
 詳細: https://docs.docker.com/engine/install/
