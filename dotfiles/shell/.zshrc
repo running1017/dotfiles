@@ -35,7 +35,7 @@ if [ -f "$HOME/.aliases.d/loader.sh" ]; then
 fi
 
 # custom tools
-export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.local/tools:$PATH"
 
 # Initialize Starship
 eval "$(starship init zsh)"

@@ -36,7 +36,7 @@ setup_vscode_symlinks() {
         "設定ディレクトリの作成"
 
     # dotfilesのVSCode設定ディレクトリ
-    local dotfiles_vscode_dir="${DOTFILES_ROOT}/dotfiles/tools/vscode/User"
+    local dotfiles_vscode_dir="${DOTFILES_ROOT}/dotfiles/config/vscode/User"
 
     # リンクを作成する設定ファイルのリスト
     local config_files=(
