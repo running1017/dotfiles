@@ -9,4 +9,4 @@ shell/.aliases.d        ${HOME}/.aliases.d
 config/starship/starship.toml    ${HOME}/.config/starship.toml
 
 # 汎用ツール
-tools                     ${HOME}/.local/tools
+cli-tools                     ${HOME}/.local/cli-tools

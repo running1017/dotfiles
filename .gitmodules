@@ -1,0 +1,3 @@
+[submodule "dotfiles/cli-tools"]
+	path = dotfiles/cli-tools
+	url = https://github.com/running1017/cli-tools.git
