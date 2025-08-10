@@ -5,6 +5,7 @@ declare -A DEFAULT_SELECTIONS=(
     ["base_packages"]=true
     ["shell"]=true
     ["dotfiles"]=true
+    ["dev_guides"]=false
     ["ssh"]=false
     ["gui_tools"]=false
 )
@@ -14,6 +15,7 @@ declare -A MENU_ITEMS=(
     ["base_packages"]="base_packages:基本的なコマンドラインツールをインストールします"
     ["shell"]="shell:zsh, eza, starshipのセットアップを行います"
     ["dotfiles"]="dotfiles:設定ファイルのシンボリックリンクを作成します"
+    ["dev_guides"]="dev_guides:開発環境のセットアップガイドを表示します (sudo不要)"
     ["ssh"]="ssh:SSH鍵を生成します"
     ["gui_tools"]="gui_tools:GUIツールの設定を行います"
 )
@@ -23,6 +25,7 @@ MENU_ORDER=(
     "base_packages"
     "shell"
     "dotfiles"
+    "dev_guides"
     "ssh"
     "gui_tools"
 )

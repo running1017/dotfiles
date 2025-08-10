@@ -19,6 +19,7 @@ execute_tasks() {
         "base_packages"  # 基本パッケージを最初にインストール
         "shell"          # シェル環境の設定
         "dotfiles"       # 設定ファイルの配置
+        "dev_guides"     # 開発環境ガイドの表示
         "ssh"           # SSH鍵の生成
         "gui_tools"     # GUIツールの設定
     )
@@ -30,16 +31,19 @@ execute_tasks() {
                 "base_packages") install_base_packages ;;
                 "shell") setup_zsh ;;
                 "dotfiles") setup_dotfiles ;;
+                "dev_guides") show_dev_guides ;;
                 "ssh") setup_ssh ;;
                 "gui_tools") install_gui_tools ;;
             esac
         fi
     done
 
-    # セットアップ完了後、開発環境のセットアップガイドを表示
-    echo -e "\n${BLUE}=== 開発環境のセットアップガイド ===${NC}"
-    echo -e "以下は開発環境をセットアップするための手順です。必要に応じて実行してください。\n"
-    show_dev_guides
+    # dev_guidesが明示的に選択されていない場合のみ、セットアップ完了後にガイドを表示
+    if [[ ! " ${selected[@]} " =~ " dev_guides " ]] && [[ ${#selected[@]} -gt 0 ]]; then
+        echo -e "\n${BLUE}=== 開発環境のセットアップガイド ===${NC}"
+        echo -e "以下は開発環境をセットアップするための手順です。必要に応じて実行してください。\n"
+        show_dev_guides
+    fi
 }
 
 # メインの初期化関数
